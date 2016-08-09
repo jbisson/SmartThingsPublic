@@ -336,7 +336,6 @@ def configure() {
     ----------------------------------------------------------------
     Param   Size    Default Description
     ------- ------- ------- ----------------------------------------
-    0x01 (1)    1       0   Power: 1, Voltage: 1
     0x03 (3)    1       0   Current Overload Protection. Load will be closed when the Current overrun (US: 15.5A, other country: 16.2A) and the 
     						time more than 2 minutes (0=disabled, 1=enabled).
     0x14 (20)   1       0   Configure the output load status after re-power on (0=last status, 1=always on, 2=always off)
