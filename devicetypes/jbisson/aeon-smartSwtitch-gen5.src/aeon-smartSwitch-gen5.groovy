@@ -1,6 +1,6 @@
 /**
  *
- *  Aeon Smart Energy Switch v2 (for DSC06106)
+ *  Aeon Smart Switch v2 (for DSC06106)
  * 
  *  Copyright 2016 jbisson
  *  based on James P ('elasticdev'), Mr Lucky, lg kahn code.
@@ -9,14 +9,11 @@
  *
  *  Revision History
  *  ==============================================
- *  2016-08-11: Version: 4
- *  Added log preference, enable/disable switch preference, added dev documentation, changed fingerprint
- *
- *  2016-08-08: Version: 3.0.1 - jbisson 
- *  Adapt device handler to support gen5 version 3.1
- *
- *  2016-08-08 Version 3.0 - jbisson
- *
+ *  2016-08-12 Version 4.0.2  Added version in preference setting
+ *  2016-08-11 Version 4.0.1  Added switch disabled visual on the main tile, added firmware version
+ *  2016-08-11 Version 4.0.0  Added log preference, enable/disable switch preference, added dev documentation, changed fingerprint
+ *  2016-08-08 Version 3.0.1  Adapt device handler to support gen5 version 3.1
+ *  2016-08-08 Version 3.0
  *  2015-09-01 version 2 - lg kahn
  * 
  *
@@ -25,20 +22,25 @@
  *  Z-Wave Supported Command Classes:
  *  Code Name					Version
  *  ==== ======================================	=======
- *  0x25 COMMAND_CLASS_SWITCH_BINARY		 V1
- *  0x31 COMMAND_CLASS_SENSOR_MULTILEVEL	 V5
- *  0x32 COMMAND_CLASS_METER			     V3
- *  0x70 COMMAND_CLASS_CONFIGURATION		 V1
- *  0x27 COMMAND_CLASS_SWITCH_ALL		     V1
- *  0x85 COMMAND_CLASS_ASSOCIATION		     V2
- *  0x72 COMMAND_CLASS_MANUFACTURER_SPECIFIC V2
- *  0x86 COMMAND_CLASS_VERSION			     V2
- *  0xEF COMMAND_CLASS_MARK			         V1
- *  0x82 COMMAND_CLASS_HAIL			         V1
+ *  0x25 COMMAND_CLASS_SWITCH_BINARY		 V1                 Implemented
+ *  0x31 COMMAND_CLASS_SENSOR_MULTILEVEL	 V5                 Implemented - not used
+ *  0x32 COMMAND_CLASS_METER			     V3                 Implemented
+ *  0x70 COMMAND_CLASS_CONFIGURATION		 V1                 Implemented
+ *  0x27 COMMAND_CLASS_SWITCH_ALL		     V1                 Not implemented
+ *  0x85 COMMAND_CLASS_ASSOCIATION		     V2                 Not implemented
+ *  0x72 COMMAND_CLASS_MANUFACTURER_SPECIFIC V2                 Implemented
+ *  0x86 COMMAND_CLASS_VERSION			     V2                 Implemented
+ *  0xEF COMMAND_CLASS_MARK			         V1                 Not implemented
+ *  0x82 COMMAND_CLASS_HAIL			         V1                 Implemented
  *
  */
+ 
+ def clientVersion() {
+    return "4.0.2"
+}
+
 metadata {
-	definition (name: "Aeon Labs Smart Switch Gen5", namespace: "jbisson", author: "Jonathan Bisson") {
+	definition (name: "Aeon Labs Smart Switch DSC06106", namespace: "jbisson", author: "Jonathan Bisson") {
 		capability "Switch"
 		capability "Polling"
 		capability "Power Meter"
@@ -68,8 +70,8 @@ metadata {
                 attributeState "turningOn", label:'${name}', action:"switch.off", icon:"st.lights.philips.hue-single", backgroundColor:"#79b821", nextState:"turningOff"
                 attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.lights.philips.hue-single", backgroundColor:"#ffffff", nextState:"turningOn"
             }
-            tileAttribute ("device.power", key: "SECONDARY_CONTROL") {
-                attributeState "power", label:'Power level: ${currentValue}W', icon: "st.Appliances.appliances17"
+            tileAttribute ("statusText3", key: "SECONDARY_CONTROL") {
+                attributeState "statusText3", label:'${currentValue}', icon: "st.Appliances.appliances17"
             }
         }
 
@@ -107,13 +109,15 @@ metadata {
 }
 
 preferences {
+	input title: "", description: "Aeon Smart Switch DSC06106 v${clientVersion()}", displayDuringSetup: true, type: "paragraph", element: "paragraph"
+
     input name: "switchDisabled", type: "bool", title: "Disable switch on/off\n", defaultValue: "false"
     input name: "refreshInterval", type: "number", title: "Refresh interval \n\nSet the refresh time interval (secondes) between each reports.\n", required: true, displayDuringSetup: true
     input name: "switchAll", type: "enum", title: "Respond to switch all?\n", description: "How does switch respond to the 'Switch All' command", options:["Disabled", "Off Enabled", "On Enabled", "On and Off Enabled"], required: false, defaultValue: "On and Off Enabled", displayDuringSetup: true
     
     input name: "onlySendReportIfValueChange", type: "bool", title: "Only send report if value change (either in terms of wattage or a %)\n", defaultValue: "false"
     
-    input description: "The next two parameters are only working if the only send report is set to true.", type: "paragraph", element: "paragraph"
+    input title: "", description: "The next two parameters are only working if the only send report is set to true.", type: "paragraph", element: "paragraph"
     
     input name: "minimumChangeWatts", type: "number", title: "Minimum change in wattage for a report to be sent (0 - 100).\n", defaultValue: "25", range: "0..100"
     input name: "minimumChangePercent", type: "number", title: "Minimum change in percentage for a report to be sent (0 - 60000)\n", defaultValue: "5", range: "0..60000"
@@ -121,7 +125,7 @@ preferences {
     input name: "includeWattInReport", type: "bool", title: "Include energy meter (W) in report?\n", defaultValue: "true"        
     input name: "includeCurrentUsageInReport", type: "bool", title: "Include current usage (kWh) in report?\n", defaultValue: "true"    
 	
-	input description: "Logging", type: "paragraph", element: "paragraph"
+	input title: "", description: "Logging", type: "paragraph", element: "paragraph"
     input name: "isLogLevelTrace", type: "bool", title: "Show trace log level ?\n", defaultValue: "false"
     input name: "isLogLevelDebug", type: "bool", title: "Show debug log level ?\n", defaultValue: "true"
 }
@@ -227,6 +231,7 @@ def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
 			return createEvent(name: "energy", value: cmd.scaledMeterValue, unit: "kVAh")
 		} else if (cmd.scale == 2) { 
         	logDebug " got wattage $cmd.scaledMeterValue"
+            updatePowerStatus(Math.round(cmd.scaledMeterValue))
 			return createEvent(name: "power", value: Math.round(cmd.scaledMeterValue), unit: "W")
 		} else if (cmd.scale == 4) { // Volts
             logDebug " got voltage $cmd.scaledMeterValue"
@@ -490,6 +495,7 @@ def poll() {
 def refresh() {
  	logDebug "refresh()"    
     updateDeviceInfo()
+    updatePowerStatus(0)
     
     sendEvent(name: "power", value: "0", displayed: true,, unit: "W")    
     sendEvent(name: "energy", value: "0", displayed: true,, unit: "kWh")
@@ -512,6 +518,7 @@ def updated() {
 	logDebug "updated()"
     
     updateStatus()
+    updatePowerStatus(0)
     response(configure())
 }
 
@@ -552,6 +559,14 @@ private updateStatus() {
     	sendEvent(name:"statusText2", value: "${getBatteryRuntime()}", displayed:false)
     } else {
     	state.energyMeterRuntimeStart = now()
+    }
+}
+
+private updatePowerStatus(val) {
+    if (switchDisabled) {
+    	sendEvent(name:"statusText3", value: "$val W *** SWITCH DISABLED ***", displayed:false)
+    } else {
+    	sendEvent(name:"statusText3", value: "$val W", displayed:false)
     }
 }
 

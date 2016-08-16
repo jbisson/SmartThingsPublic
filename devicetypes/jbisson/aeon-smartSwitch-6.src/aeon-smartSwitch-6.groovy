@@ -12,14 +12,12 @@
  *
  *  Revision History
  *  ==============================================
- *  2016-08-11: Version: 4
- *  Added log preference, enable/disable switch preference, added dev documentation, changed fingerprint
- *
- *  2016-08-08: Version: 3.0.1 - jbisson 
- *  Adapt device handler to support gen5 version 3.1
- *
- *  2016-08-08 Version 3.0 - jbisson
- *
+ *  2016-08-15 Version 4.0.3  Fixed setcolor logic when using the Color Control capability
+ *  2016-08-12 Version 4.0.2  Added version in preference setting
+ *  2016-08-11 Version 4.0.1  Added switch disabled visual on the main tile, added firmware version
+ *  2016-08-11 Version 4.0.0  Added log preference, enable/disable switch preference, added dev documentation, changed fingerprint
+ *  2016-08-08 Version 3.0.1  Adapt device handler to support gen5 version 3.1
+ *  2016-08-08 Version 3.0
  *  2015-09-01 version 2 - lg kahn
  * 
  *
@@ -29,25 +27,29 @@
  *  Code Name					Version
  *  ==== ======================================	=======
  *  0x5E ??
- *  0x25 COMMAND_CLASS_SWITCH_BINARY          V1
- *  0x26 COMMAND_CLASS_SWITCH_MULTILEVEL      V3 (new in gen5)
- *  0x32 COMMAND_CLASS_METER                  V3
- *  0x33 COMMAND_CLASS_COLOR                  V1 (new in gen5)
- *  0x70 COMMAND_CLASS_CONFIGURATION          V1
- *  0x27 COMMAND_CLASS_SWITCH_ALL             V1
- *  0x81 COMMAND_CLASS_CLOCK                  V1 (new in gen5)
- *  0x85 COMMAND_CLASS_ASSOCIATION            V2
- *  0x72 COMMAND_CLASS_MANUFACTURER_SPECIFIC  V2
- *  0x59 COMMAND_CLASS_ASSOCIATION_GRP_INFO   V1
- *  0x86 COMMAND_CLASS_VERSION                V2
- *  0xEF COMMAND_CLASS_MARK                   V1
- *  0x82 COMMAND_CLASS_HAIL                   V1
- *  0x7A COMMAND_CLASS_FIRMWARE_UPDATE_MD_V2  V2 (new in gen5)
- *  0x73 COMMAND_CLASS_POWERLEVEL             V1 (new in gen5)
- *  0x5A COMMAND_CLASS_DEVICE_RESET_LOCALLY   V1 (new in gen5)
+ *  0x25 COMMAND_CLASS_SWITCH_BINARY          V1                 Implemented
+ *  0x26 COMMAND_CLASS_SWITCH_MULTILEVEL      V3 (new in gen5)   Implemented - not used
+ *  0x32 COMMAND_CLASS_METER                  V3                 Implemented
+ *  0x33 COMMAND_CLASS_COLOR                  V1 (new in gen5)   Not implemented
+ *  0x70 COMMAND_CLASS_CONFIGURATION          V1                 Implemented
+ *  0x27 COMMAND_CLASS_SWITCH_ALL             V1                 Not implemented
+ *  0x81 COMMAND_CLASS_CLOCK                  V1 (new in gen5)   Not implemented
+ *  0x85 COMMAND_CLASS_ASSOCIATION            V2                 Not implemented
+ *  0x72 COMMAND_CLASS_MANUFACTURER_SPECIFIC  V2                 Implemented
+ *  0x59 COMMAND_CLASS_ASSOCIATION_GRP_INFO   V1                 Not implemented
+ *  0x86 COMMAND_CLASS_VERSION                V2                 Implemented
+ *  0xEF COMMAND_CLASS_MARK                   V1                 Not implemented
+ *  0x82 COMMAND_CLASS_HAIL                   V1                 Implemented - not used
+ *  0x7A COMMAND_CLASS_FIRMWARE_UPDATE_MD_V2  V2 (new in gen5)   Implemented
+ *  0x73 COMMAND_CLASS_POWERLEVEL             V1 (new in gen5)   Not implemented
+ *  0x5A COMMAND_CLASS_DEVICE_RESET_LOCALLY   V1 (new in gen5)   Not implemented
  *
  */
- 
+
+def clientVersion() {
+    return "4.0.3"
+}
+
 metadata {
 	definition (name: "Aeon Labs Smart Switch 6", namespace: "jbisson", author: "Jonathan Bisson") {
 		capability "Switch"
@@ -63,8 +65,7 @@ metadata {
       
        command "energy"
        command "momentary"
-       command "nightLight"
-       command "setColor"
+       command "nightLight"       
        
 	   command "reset"
        command "factoryReset"
@@ -86,8 +87,8 @@ metadata {
                 attributeState "turningOn", label:'${name}', action:"switch.off", icon:"st.lights.philips.hue-single", backgroundColor:"#79b821", nextState:"turningOff"
                 attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.lights.philips.hue-single", backgroundColor:"#ffffff", nextState:"turningOn"
             }
-            tileAttribute ("device.power", key: "SECONDARY_CONTROL") {
-                attributeState "power", label:'Power level: ${currentValue}W', icon: "st.Appliances.appliances17"
+            tileAttribute ("statusText3", key: "SECONDARY_CONTROL") {
+                attributeState "statusText3", label:'${currentValue}', icon: "st.Appliances.appliances17"
             }
         }
         standardTile("deviceMode", "deviceMode", canChangeIcon: true, canChangeBackground: true, width: 2, height: 2) {
@@ -136,12 +137,6 @@ metadata {
             state "color", action:"setColor"
         }
 
-        standardTile("deviceMode", "deviceMode", canChangeIcon: true, canChangeBackground: true) {
-            state "energy", label:'energy', action:"momentary", icon: "http://mail.lgk.com/aeonv6orange.png"
-            state "momentary", label:'momentary', action:"nightLight", icon: "http://mail.lgk.com/aeonv6white.png"
-            state "nightLight", label:'NightLight', action:"energy", icon: "http://mail.lgk.com/aeonv6blue.png"      
-        }
-
         standardTile("configure", "device.power", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
             state "configure", label:'', action:"configuration.configure", icon:"st.secondary.configure"
         }
@@ -157,12 +152,14 @@ metadata {
 }
 
 preferences {
+	input title: "", description: "Aeon Multiswitch 6 (gen5) v${clientVersion()}", displayDuringSetup: true, type: "paragraph", element: "paragraph"
+        
 	input name: "switchDisabled", type: "bool", title: "Disable switch on/off\n", defaultValue: "false"
     input name: "refreshInterval", type: "number", title: "Refresh interval \n\nSet the refresh time interval (secondes) between each reports.\n", required: true, displayDuringSetup: true
     input name: "switchAll", type: "enum", title: "Respond to switch all?\n", description: "How does switch respond to the 'Switch All' command", options:["Disabled", "Off Enabled", "On Enabled", "On and Off Enabled"], required: false, defaultValue: "On and Off Enabled", displayDuringSetup: true
     
     input name: "onlySendReportIfValueChange", type: "bool", title: "Only send report if value change (either in terms of wattage or a %)\n", defaultValue: "false"
-    input description: "The next two parameters are only working if the 'only send report' is set to true.", type: "paragraph", element: "paragraph"
+    input title: "", description: "The next two parameters are only working if the 'only send report' is set to true.", type: "paragraph", element: "paragraph"
     
     input name: "minimumChangeWatts", type: "number", title: "Minimum change in wattage for a report to be sent (0 - 100).\n", defaultValue: "25", range: "0..100"
     input name: "minimumChangePercent", type: "number", title: "Minimum change in percentage for a report to be sent (0 - 60000)\n", defaultValue: "5", range: "0..60000"
@@ -172,7 +169,7 @@ preferences {
     input name: "includeCurrentInReport", type: "bool", title: "Include current (A) in report?\n", defaultValue: "true"
     input name: "includeCurrentUsageInReport", type: "bool", title: "Include current usage (kWh) in report?\n", defaultValue: "true"    
     
-    input description: "Logging", type: "paragraph", element: "paragraph"
+    input title: "", description: "Logging", type: "paragraph", element: "paragraph"
     input name: "isLogLevelTrace", type: "bool", title: "Show trace log level ?\n", defaultValue: "false"
     input name: "isLogLevelDebug", type: "bool", title: "Show debug log level ?\n", defaultValue: "true"
 }
@@ -283,6 +280,7 @@ def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
 			return createEvent(name: "energy", value: cmd.scaledMeterValue, unit: "kVAh")
 		} else if (cmd.scale == 2) { 
         	logDebug " got wattage $cmd.scaledMeterValue"
+            updatePowerStatus(Math.round(cmd.scaledMeterValue))
 			return createEvent(name: "power", value: Math.round(cmd.scaledMeterValue), unit: "W")
 		} else if (cmd.scale == 4) { // Volts
             logDebug " got voltage $cmd.scaledMeterValue"
@@ -389,6 +387,25 @@ def zwaveEvent(physicalgraph.zwave.commands.manufacturerspecificv2.DeviceSpecifi
     logTrace "deviceIdDataFormat:         ${cmd.deviceIdDataFormat}"
     logTrace "deviceIdDataLengthIndicator:${cmd.deviceIdDataLengthIndicator}"
     logTrace "deviceIdType:               ${cmd.deviceIdType}"
+    
+    return updateDeviceInfo()
+}
+
+/**
+ *  COMMAND_CLASS_FIRMWARE_UPDATE_MD_V2 (0x7a)
+ *
+ * Integer	checksum
+ * Integer	firmwareId
+ * Integer	manufacturerId
+ *
+ */
+def zwaveEvent(physicalgraph.zwave.commands.firmwareupdatemdv2.FirmwareMdReport cmd) {
+    if (state.deviceInfo == null) {
+    	state.deviceInfo = [:]
+	}
+    
+    state.deviceInfo['checksum'] = "${cmd.checksum}"
+    state.deviceInfo['firmwareId'] = "${cmd.firmwareId}"
     
     return updateDeviceInfo()
 }
@@ -551,8 +568,9 @@ def poll() {
  *  Required for the "Refresh" capability
  */
 def refresh() {
-	logDebug "refresh()"
+    logDebug "refresh()"
     updateDeviceInfo()
+    updatePowerStatus(0)
     
     sendEvent(name: "power", value: "0", displayed: true,, unit: "W")    
     sendEvent(name: "energy", value: "0", displayed: true,, unit: "kWh")
@@ -560,7 +578,7 @@ def refresh() {
     sendEvent(name: "voltage", value: "0", displayed: true, unit: "V")
     
 	delayBetween([
-		zwave.switchMultilevelV1.switchMultilevelGet().format(),
+		zwave.switchMultilevelV1.switchMultilevelGet().format(),        
 		zwave.meterV3.meterGet(scale: 0).format(), // energy kWh
 		zwave.meterV3.meterGet(scale: 1).format(), // energy kVAh
         zwave.meterV3.meterGet(scale: 2).format(), // watts
@@ -569,7 +587,7 @@ def refresh() {
         zwave.configurationV1.configurationGet(parameterNumber: 0x51).format(), // device state
         zwave.configurationV1.configurationGet(parameterNumber: 0x53).format(), // night light RGB value
         zwave.configurationV1.configurationGet(parameterNumber: 0x54).format(), // led brightness        
-	], 1000)
+	], 100)
 }
 
 /**
@@ -581,10 +599,33 @@ def setLevel(level) {
     setBrightnessLevel(level) 
 }
 
+/**
+ *  Sets the color to the passed in maps values
+ *
+ *  Required for the "Color Control" capability
+ */
+def setColor(colormap) {
+	logDebug " in setColor"
+    
+    if (colormap.hex == null && colormap.hue) {    
+    	def hexColor = colorUtil.hslToHex(colormap.hue, colormap.saturation)
+        logDebug " in setColor colormap = $hexColor"
+        
+    	sendEvent(name: "color", value: hexColor)
+     	zwave.configurationV1.configurationSet(parameterNumber: 0x53, size: 3, configurationValue: colorUtil.hexToRgb(hexColor)).format()
+        
+    	
+    } else {
+    	logDebug " in setColor: hex =  ${colormap.hex}"   
+    	sendEvent(name: "color", value: colormap.hex)
+     	zwave.configurationV1.configurationSet(parameterNumber: 0x53, size: 3, configurationValue: [colormap.red, colormap.green, colormap.blue]).format()
+    }    
+}
+
 /*******************************************************************************
  *	Methods                                                                    *
  ******************************************************************************/
- 
+
 /**
  *  updated - Called when the preferences of the device type are changed
  */
@@ -592,6 +633,7 @@ def updated() {
 	logDebug "updated()"
     
     updateStatus()
+    updatePowerStatus(0)
     response(configure())
 }
 
@@ -624,6 +666,7 @@ def getDeviceInfo() {
 	logDebug "getDeviceInfo()"
     return [
 		zwave.versionV1.versionGet().format(),
+        zwave.firmwareUpdateMdV2.firmwareMdGet().format(),
     	//zwave.manufacturerSpecificV2.deviceSpecificGet().format(),
     	zwave.manufacturerSpecificV2.manufacturerSpecificGet().format()
     ]
@@ -634,6 +677,14 @@ private updateStatus() {
     	sendEvent(name:"statusText2", value: "${getBatteryRuntime()}", displayed:false)
     } else {
     	state.energyMeterRuntimeStart = now()
+    }
+}
+
+private updatePowerStatus(val) {
+    if (switchDisabled) {
+    	sendEvent(name:"statusText3", value: "$val W *** SWITCH DISABLED ***", displayed:false)
+    } else {
+    	sendEvent(name:"statusText3", value: "$val W", displayed:false)
     }
 }
 
@@ -649,6 +700,9 @@ private updateDeviceInfo() {
         buffer += "manufacturer Name: ${state.deviceInfo['manufacturerName']}\n";
         buffer += "manufacturer Id: ${state.deviceInfo['manufacturerId']}\n";        
         buffer += "product Id: ${state.deviceInfo['productId']} Type Id: ${state.deviceInfo['productTypeId']}\n";        
+        buffer += "firmwareId: ${state.deviceInfo['firmwareId']} checksum: ${state.deviceInfo['checksum']}\n";    
+        
+        
     }
         
 	return sendEvent(name:"deviceInfo", value: "$buffer", displayed:false)
@@ -708,18 +762,6 @@ def momentary() {
 def setDeviceMode(mode) {    
 	logTrace "set current mode to '$mode'"
 	zwave.configurationV1.configurationSet(parameterNumber: 0x51, size: 1, scaledConfigurationValue: mode).format()
-}
-
-def setColor(colormap) {
-    logDebug " in setColor: hex =  ${colormap.hex}"
-   // log.debug "red = ${colormap.red}"
-   // log.debug "green = ${colormap.green}"
-   // log.debug "blue = ${colormap.blue}"
-         
-   if (colormap.hex) { 
-   		sendEvent(name: "color", value: colormap.hex)
-     	zwave.configurationV1.configurationSet(parameterNumber: 0x53, size: 3, configurationValue: [colormap.red, colormap.green, colormap.blue]).format()
-	}
 }
 
 def setBrightnessLevel(newLevel) {
