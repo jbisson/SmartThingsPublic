@@ -9,7 +9,10 @@
  *  The brightness intensity only works in energy mode (does not work in nightlight mode)
  *  You can only change the led color in nightlight mode
  * 
- *
+ * 
+ * If you are pairing in secure inclusive mode, make sure you turn it on in the config page.
+ * 
+ * 
  *  Revision History
  *  ==============================================
  *  2016-11-13 Version 5.0.0  Added Z-Wave secure inclusion support (note that you'll need to manually set it up during configuration)

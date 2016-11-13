@@ -1,8 +1,21 @@
-## SmartThings Projects
+## Aeon Smart Switch 6 gen 5
 
-This repository contains SmartApps applications and device handlers 
-I wrote for the [SmartThings](http://www.smartthings.com) platform
-home automation system.
+Device handler used for the aeron smart switch gen5. Here's a list of features:
+
+- On/off switch mode
+- Led color configuration
+- Report frequency configuration (how often does the different values get updated)
+- Secure mode inclusion support
+- Disable switch configuration so it always stay on/off, if needed
+- Report can either be configured to always be sent on a fixed time or when there is a delta difference in change %
+
+## How to install
+Get the code here: https://github.com/jbisson/SmartThingsPublic/blob/master/devicetypes/jbisson/aeon-smartSwitch-6.src/aeon-smartSwitch-6-gen5.groovy 
+
+Follow this for more information https://community.smartthings.com/t/faq-an-overview-of-using-custom-code-in-smartthings/16772
+
+## Support
+https://community.smartthings.com/t/aeon-smart-energy-switch-6-gen5/62937
 
 ---
 
@@ -13,12 +26,3 @@ development by making a donation via PayPal.*
 
 ---
 
-### Smart Apps
-
-* [__Expose REST API__](ExposeRestApi.md) - Expose REST API App allows you to trigger events to a button as well as the ability to send notification directly from a REST API.
-
-### Device Handlers
-
-* [__Flic Button__](FlicButton.md) - Fluc Button device handler.
-* [__Aeon Smart Switch 6 (gen5)__](AeonSmartSwitch6gen5.md) - Aeon Smart Switch 6 (gen6) device handler.
-* [__Aeon Smart Switch DSC06106__](AeonSmartSwitchDsc06106.md) - Aeon Smart Switch 6 (gen6) device handler.
