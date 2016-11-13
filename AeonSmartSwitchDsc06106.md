@@ -21,9 +21,4 @@ development by making a donation via PayPal.*
 
 * [__Flic Button__](FlicButton.md) - Fluc Button device handler.
 * [__Aeon Smart Switch 6 (gen5)__](AeonSmartSwitch6gen5.md) - Aeon Smart Switch 6 (gen6) device handler.
-* [__Aeon Smart Switch DSC06106__](AeonSmartSwitchDsc06106.md) - Aeon Smart Switch DSC06106 device handler.
-
-Follow us on the web:
-
-Twitter: http://twitter.com/smartthingsdev
-Facebook: http://facebook.com/smartthingsdevelopers
+* [__Aeon Smart Switch DSC06106__](AeonSmartSwitchDsc06106.md) - Aeon Smart Switch 6 (gen6) device handler.
