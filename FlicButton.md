@@ -9,7 +9,7 @@ Device handler that tries to simulate an hardware flic button. Here's what it ca
  
  This device handler works really well with the expose-rest api app. https://github.com/jbisson/SmartThingsPublic/blob/master/ExposeRestApi.md
  Combined the two together, it allows you to receive click, doubleClick and hold events from a real flic button (hardware).  
-  
+ 
  Once the event is inside the smartthing, you could use CoRE (Community’s own Rule Engine) for defining your own rule. (ie: When I click on my flicButton do this, ect)
  https://community.smartthings.com/t/release-candidate-core-communitys-own-rule-engine/57972
  
@@ -19,7 +19,7 @@ Get the code here: https://github.com/jbisson/SmartThingsPublic/blob/master/devi
 Follow this for more information https://community.smartthings.com/t/faq-an-overview-of-using-custom-code-in-smartthings/16772
 
 ## Support
-https://community.smartthings.com/t/aeon-smart-energy-switch-6-gen5/62937
+https://community.smartthings.com/t/flic-button/62951
 
 ---
 

@@ -6,7 +6,7 @@
  *  For example, let's say you want to "catch" an event for a device that is not yet integrated with smartthing but has the ability to do an http request, you could expose an end-point with this
  *  app, send the request from your device and this app will propragate the event in the smartthing system. 
  *  
- *  Flic Button support: Once you have an end-point configured, you could 
+ *  Flic Button support: This app has been optimized to work best with flic button. You can see a step by step tutorial on how to set it up here: https://community.smartthings.com/t/flic-button/62951
  * 
  * 
  *  You will need to enable oAuth support for this app to work. 
