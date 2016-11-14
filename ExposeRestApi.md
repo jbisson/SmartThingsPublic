@@ -15,7 +15,7 @@ Expose REST API App allows you to expose a public end-point URL, allowing you to
  
    Button support (works well with flic button handler): 
    Usage (REST API on how to invoked it):
-	https://graph.api.smartthings.com/api/smartapps/installations/&lt;smartAppId&gt;/button/&lt;btnColor&gt;/&lt;btnNumber&gt;/&lt;action&gt;?access_token=&lt;your_access_token &gt;  
+	https://graph.api.smartthings.com/api/smartapps/installations/<smartAppId>/button/<btnColor>/<btnNumber>/<action>?access_token=<your_access_token>
 	&lt; smartAppId &gt;: App id of your smart app  
 	&lt;your_access_token&gt; access token used for authentication  
 	&lt; btnColor &gt; : Color of your button (if using the flic handler integration options are: black, white, turquise, green, yellow)  
