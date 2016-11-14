@@ -15,12 +15,12 @@ Expose REST API App allows you to expose a public end-point URL, allowing you to
  
    Button support (works well with flic button handler): 
    Usage (REST API on how to invoked it):
-      https://graph.api.smartthings.com/api/smartapps/installations/<smartAppId>/button/<btnColor>/<btnNumber>/<action>?access_token=<your_access_token>
-      <smartAppId>: App id of your smart app
-      <your_access_token> access token used for authentication
-      <btnColor>  : Color of your button (if using the flic handler integration options are: black, white, turquise, green, yellow)
-      <btnNumber> : Button number identification used if you have more than one button with the same color 
-      <action>    : Action name - command name - that will be involked. (if using the flic handler integration options are: click, doubleClick, hold)
+      https://graph.api.smartthings.com/api/smartapps/installations/`<smartAppId>`/button/`<btnColor>`/`<btnNumber>`/`<action>`?access_token=`<your_access_token>`
+      `<smartAppId>`: App id of your smart app
+      `<your_access_token>` access token used for authentication
+      `<btnColor>`  : Color of your button (if using the flic handler integration options are: black, white, turquise, green, yellow)
+      `<btnNumber>` : Button number identification used if you have more than one button with the same color 
+      `<action>`    : Action name - command name - that will be involked. (if using the flic handler integration options are: click, doubleClick, hold)
   
   Examples: 
    https://graph.api.smartthings.com/api/smartapps/installations/bbb9dc65-7002-4d2a-9eba-d2d301320639/button/turquise/0/click?access_token=54cc5a76-53ac-5497-96ff-4846fbc02a11
@@ -34,7 +34,7 @@ Expose REST API App allows you to expose a public end-point URL, allowing you to
 ## How to install
 Get the code here: https://github.com/jbisson/SmartThingsPublic/blob/master/smartapps/jbisson/expose-rest-api.src/expose-rest-api.groovy
 
-Follow this for more information https://community.smartthings.com/t/flic-button/62951
+Follow this for more information https://community.smartthings.com/t/faq-an-overview-of-using-custom-code-in-smartthings/16772
 
 ## Support
 https://community.smartthings.com/t/flic-button/62951
