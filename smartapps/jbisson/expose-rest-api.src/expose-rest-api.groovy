@@ -1,8 +1,16 @@
 /**
  *
- *  Expose REST API App allows you to trigger events to a button as well as the ability to send notification directly from a REST API.
+ *  Expose REST API App allows you to expose a public end-point URL, allowing you to trigger an event within the Smartthing ecosystem.
+ *  It support any device handler that has notification or button capability. 
  * 
- *  You will need to enable oAuth support for this app to work. You can find example on how to do it so here: 
+ *  For example, let's say you want to "catch" an event for a device that is not yet integrated with smartthing but has the ability to do an http request, you could expose an end-point with this
+ *  app, send the request from your device and this app will propragate the event in the smartthing system. 
+ *  
+ *  Flic Button support: Once you have an end-point configured, you could 
+ * 
+ * 
+ *  You will need to enable oAuth support for this app to work. 
+ *  Once installed, go to https://graph.api.smartthings.com/ide/apps and click edit properties. In this screen
  *  - Creating a REST SmartApp Endpoint https://community.smartthings.com/t/tutorial-creating-a-rest-smartapp-endpoint/4331
  *
  *  Button support (works well with flic button handler): 
@@ -15,8 +23,8 @@
  *     <action>    : Action name - command name - that will be involked. (if using the flic handler integration options are: click, doubleClick, hold)
  * 
  * Examples: 
- *  https://graph.api.smartthings.com/api/smartapps/installations/aea9dc65-7002-4d2a-9eba-d2d301320639/button/turquise/0/click?access_token=54cc5a76-53ac-5497-96ff-4846fbc02a11
- *  https://graph.api.smartthings.com/api/smartapps/installations/aea9dc65-7002-4d2a-9eba-d2d301320639/button/black/0/doubleClick?access_token=54cc5a76-53ac-5497-96ff-4846fbc02a11
+ *  https://graph.api.smartthings.com/api/smartapps/installations/bbb9dc65-7002-4d2a-9eba-d2d301320639/button/turquise/0/click?access_token=54cc5a76-53ac-5497-96ff-4846fbc02a11
+ *  https://graph.api.smartthings.com/api/smartapps/installations/bbb9dc65-7002-4d2a-9eba-d2d301320639/button/black/0/doubleClick?access_token=54cc5a76-53ac-5497-96ff-4846fbc02a11
  * 
  * Notification support
  * Usage (REST API on how to invoked it):

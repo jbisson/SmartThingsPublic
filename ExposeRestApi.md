@@ -1,8 +1,25 @@
-## SmartThings Projects
+## Flic button
 
-This repository contains SmartApps applications and device handlers 
-I wrote for the [SmartThings](http://www.smartthings.com) platform
-home automation system.
+Device handler that tries to simulate an hardware flic button. Here's what it can do:
+
+- Click, doubleClick and hold event
+- For each click, doubleClick and hold event, record the last time the action was perforrmed
+- Choose between black, white, turquise, green and yellow color
+- Support multiple buttons of the same color to differenciate them
+ 
+ This device handler works really well with the expose-rest api app. https://github.com/jbisson/SmartThingsPublic/blob/master/ExposeRestApi.md
+ Combined the two together, it allows you to receive click, doubleClick and hold events from a real flic button (hardware).  
+  
+ Once the event is inside the smartthing, you could use CoRE (Community’s own Rule Engine) for defining your own rule. (ie: When I click on my flicButton do this, ect)
+ https://community.smartthings.com/t/release-candidate-core-communitys-own-rule-engine/57972
+ 
+## How to install
+Get the code here: https://github.com/jbisson/SmartThingsPublic/blob/master/smartapps/jbisson/expose-rest-api.src/expose-rest-api.groovy
+
+Follow this for more information https://community.smartthings.com/t/faq-an-overview-of-using-custom-code-in-smartthings/16772
+
+## Support
+https://community.smartthings.com/t/aeon-smart-energy-switch-6-gen5/62937
 
 ---
 
@@ -13,12 +30,3 @@ development by making a donation via PayPal.*
 
 ---
 
-### Smart Apps
-
-* [__Expose REST API__](ExposeRestApi.md) - Expose REST API App allows you to trigger events to a button as well as the ability to send notification directly from a REST API.
-
-### Device Handlers
-
-* [__Flic Button__](FlicButton.md) - Fluc Button device handler.
-* [__Aeon Smart Switch 6 (gen5)__](AeonSmartSwitch6gen5.md) - Aeon Smart Switch 6 (gen6) device handler.
-* [__Aeon Smart Switch DSC06106__](AeonSmartSwitchDsc06106.md) - Aeon Smart Switch 6 (gen6) device handler.
