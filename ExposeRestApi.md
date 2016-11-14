@@ -17,11 +17,11 @@ Expose REST API App allows you to expose a public end-point URL, allowing you to
    Usage (REST API on how to invoked it):
    ```
 	https://graph.api.smartthings.com/api/smartapps/installations/<smartAppId>/button/<btnColor>/<btnNumber>/<action>?access_token=<your_access_token>  
-	&lt; smartAppId &gt;: App id of your smart app  
-	&lt;your_access_token&gt; access token used for authentication  
-	&lt; btnColor &gt; : Color of your button (if using the flic handler integration options are: black, white, turquise, green, yellow)  
-	&lt; btnNumber &gt; : Button number identification used if you have more than one button with the same color   
-	&lt; action &gt;   : Action name - command name - that will be involked. (if using the flic handler integration options are: click, doubleClick, hold) 
+      <smartAppId>: App id of your smart app
+      <your_access_token> access token used for authentication
+      <btnColor>  : Color of your button (if using the flic handler integration options are: black, white, turquise, green, yellow)
+      <btnNumber> : Button number identification used if you have more than one button with the same color 
+      <action>    : Action name - command name - that will be involked. (if using the flic handler integration options are: click, doubleClick, hold)
 	```	
   
   Examples: 
@@ -30,7 +30,7 @@ Expose REST API App allows you to expose a public end-point URL, allowing you to
   
   Notification support
   Usage (REST API on how to invoked it):
-      https://graph.api.smartthings.com/api/smartapps/installations/<smartAppId>/sendNotification?access_token=<your_access_token>
+      `https://graph.api.smartthings.com/api/smartapps/installations/<smartAppId>/sendNotification?access_token=<your_access_token>`
       payload: msg=<message_you_wish_to_send>
  
 ## How to install
