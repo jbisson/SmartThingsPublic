@@ -15,12 +15,12 @@ Expose REST API App allows you to expose a public end-point URL, allowing you to
  
    Button support (works well with flic button handler): 
    Usage (REST API on how to invoked it):
-	https://graph.api.smartthings.com/api/smartapps/installations/&lt;smartAppId&gt;/button/&lt;btnColor&gt;/&lt;btnNumber&gt;/&lt;action&gt;?access_token=&lt;your_access_token &gt;
-	>   &lt; smartAppId &gt;: App id of your smart app
-	> &lt;your_access_token&gt; access token used for authentication
-	>  &lt; btnColor &gt; : Color of your button (if using the flic handler integration options are: black, white, turquise, green, yellow)
-	>  &lt; btnNumber &gt; : Button number identification used if you have more than one button with the same color 
-	>  &lt; action &gt;   : Action name - command name - that will be involked. (if using the flic handler integration options are: click, doubleClick, hold)
+	https://graph.api.smartthings.com/api/smartapps/installations/&lt;smartAppId&gt;/button/&lt;btnColor&gt;/&lt;btnNumber&gt;/&lt;action&gt;?access_token=&lt;your_access_token &gt;  
+	&lt; smartAppId &gt;: App id of your smart app  
+	&lt;your_access_token&gt; access token used for authentication  
+	&lt; btnColor &gt; : Color of your button (if using the flic handler integration options are: black, white, turquise, green, yellow)  
+	&lt; btnNumber &gt; : Button number identification used if you have more than one button with the same color   
+	&lt; action &gt;   : Action name - command name - that will be involked. (if using the flic handler integration options are: click, doubleClick, hold)  
   
   Examples: 
    https://graph.api.smartthings.com/api/smartapps/installations/bbb9dc65-7002-4d2a-9eba-d2d301320639/button/turquise/0/click?access_token=54cc5a76-53ac-5497-96ff-4846fbc02a11
