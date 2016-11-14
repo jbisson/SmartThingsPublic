@@ -1,6 +1,6 @@
 /**
  *
- *  Aeon Smart Switch v2 (for DSC06106)
+ *  Aeon Labs Smart Energy Switch (for DSB06xxx-ZWUS/DSC24-ZWAU/DSC24-ZWEU)
  * 
  *  Copyright 2016 jbisson
  *  based on James P ('elasticdev'), Mr Lucky, lg kahn code.
@@ -9,6 +9,8 @@
  *
  *  Revision History
  *  ==============================================
+ *  2016-11-13 Version 4.0.5  Added force refresh report notification update preference
+ *  2016-08-31 Version 4.0.4  Fixed fingerprint number.
  *  2016-08-12 Version 4.0.2  Added version in preference setting
  *  2016-08-11 Version 4.0.1  Added switch disabled visual on the main tile, added firmware version
  *  2016-08-11 Version 4.0.0  Added log preference, enable/disable switch preference, added dev documentation, changed fingerprint
@@ -36,11 +38,11 @@
  */
  
  def clientVersion() {
-    return "4.0.2"
+    return "4.0.5"
 }
 
 metadata {
-	definition (name: "Aeon Labs Smart Switch DSC06106", namespace: "jbisson", author: "Jonathan Bisson") {
+	definition (name: "Aeon Labs Smart Energy Switch DSB06xxx-ZWUS/DSC24-ZWAU/DSC24-ZWEU", namespace: "jbisson", author: "Jonathan Bisson") {
 		capability "Switch"
 		capability "Polling"
 		capability "Power Meter"
@@ -58,8 +60,12 @@ metadata {
        attribute "deviceMode", "String"
   
   	   // Base on https://community.smartthings.com/t/new-z-wave-fingerprint-format/48204
-       fingerprint mfr: "134", prod: "3", model: "6"
-	   fingerprint type: "1001", cc: "25,32"	   
+  	   fingerprint mfr: "0086", prod: "0003", model: "0006" // Aeon Labs Smart Energy Switch DSB06xxx       
+       fingerprint mfr: "0086", prod: "0003", model: "0018" // Smart Energy Switch G2 - DSC24-ZWEU - DSC24-ZWAU
+       // http://products.z-wavealliance.org/products/778
+       // http://products.z-wavealliance.org/products/770
+       // http://products.z-wavealliance.org/products/133
+	   fingerprint type: "1001", cc: "25,31,32,27,70,85,72,86,EF,82"	   
 	}
 
     tiles(scale: 2) {
@@ -114,8 +120,9 @@ preferences {
     input name: "switchDisabled", type: "bool", title: "Disable switch on/off\n", defaultValue: "false"
     input name: "refreshInterval", type: "number", title: "Refresh interval \n\nSet the refresh time interval (secondes) between each reports.\n", required: true, displayDuringSetup: true
     input name: "switchAll", type: "enum", title: "Respond to switch all?\n", description: "How does switch respond to the 'Switch All' command", options:["Disabled", "Off Enabled", "On Enabled", "On and Off Enabled"], required: false, defaultValue: "On and Off Enabled", displayDuringSetup: true
-    
-    input name: "onlySendReportIfValueChange", type: "bool", title: "Only send report if value change (either in terms of wattage or a %)\n", defaultValue: "false"
+    input name: "forceStateChangeOnReport", type: "bool", title: "Force state change when receiving a report ? If true, you'll always get notification even if report data doesn't change.\n", defaultValue: "false", displayDuringSetup: true
+	
+	input name: "onlySendReportIfValueChange", type: "bool", title: "Only send report if value change (either in terms of wattage or a %)\n", defaultValue: "false"
     
     input title: "", description: "The next two parameters are only working if the only send report is set to true.", type: "paragraph", element: "paragraph"
     
@@ -223,25 +230,31 @@ def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicSet cmd) {
  */
 def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
 	if (cmd.meterType == 1) {
+		def eventMap;
 		if (cmd.scale == 0) {
      	    logDebug " got kwh $cmd.scaledMeterValue"
-			return createEvent(name: "energy", value: cmd.scaledMeterValue, unit: "kWh")
+			eventMap = [name: "energy", value: cmd.scaledMeterValue, unit: "kWh"]
 		} else if (cmd.scale == 1) {
         	logDebug " got kVAh $cmd.scaledMeterValue"
-			return createEvent(name: "energy", value: cmd.scaledMeterValue, unit: "kVAh")
+			eventMap = [name: "energy", value: cmd.scaledMeterValue, unit: "kVAh"]
 		} else if (cmd.scale == 2) { 
         	logDebug " got wattage $cmd.scaledMeterValue"
             updatePowerStatus(Math.round(cmd.scaledMeterValue))
-			return createEvent(name: "power", value: Math.round(cmd.scaledMeterValue), unit: "W")
+			eventMap = [name: "power", value: Math.round(cmd.scaledMeterValue), unit: "W"]
 		} else if (cmd.scale == 4) { // Volts
             logDebug " got voltage $cmd.scaledMeterValue"
-           return createEvent(name: "voltage", value: Math.round(cmd.scaledMeterValue), unit: "V")
+           	eventMap = [name: "voltage", value: Math.round(cmd.scaledMeterValue), unit: "V"]
 		} else if (cmd.scale == 5) { //amps scale 5 is amps even though not documented
             logDebug " got amperage = $cmd.scaledMeterValue"
-           return createEvent(name: "amperage", value: cmd.scaledMeterValue, unit: "A")
+           	eventMap = [name: "amperage", value: cmd.scaledMeterValue, unit: "A"]
 		} else {
-			return createEvent(name: "electric", value: cmd.scaledMeterValue, unit: ["pulses", "V", "A", "R/Z", ""][cmd.scale - 3])
+			eventMap = [name: "electric", value: cmd.scaledMeterValue, unit: ["pulses", "V", "A", "R/Z", ""][cmd.scale - 3]]
 		}
+		
+		if (forceStateChangeOnReport) {        
+			eventMap.isStateChange = true
+		}
+		return createEvent(eventMap);
 	}
 }
 
@@ -364,6 +377,7 @@ def configure() {
 		switchAllMode = physicalgraph.zwave.commands.switchallv1.SwitchAllSet.MODE_EXCLUDED_FROM_THE_ALL_OFF_FUNCTIONALITY_BUT_NOT_ALL_ON
     }
 	
+	logTrace "forceStateChangeOnReport value: " + forceStateChangeOnReport	
 	logTrace "switchAll value: " + switchAll
 
 	def reportGroup = 0;
