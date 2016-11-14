@@ -18,7 +18,7 @@ Follow this for more information https://community.smartthings.com/t/faq-an-over
 https://community.smartthings.com/t/aeon-smart-energy-switch-6-gen5/62937
 
 ## Developer manufacturer documentation
-https://github.com/jbisson/SmartThingsPublic/blob/master/devicetypes/jbisson/aeon-smartSwitch-6.src/Aeon Labs Smart Switch 6 gen5.pdf
+https://github.com/jbisson/SmartThingsPublic/blob/master/devicetypes/jbisson/aeon-smartSwitch-6.src/Aeon%20Labs%20Smart%20Switch%206%20gen5.pdf
 
 ---
 
