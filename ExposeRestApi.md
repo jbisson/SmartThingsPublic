@@ -30,8 +30,8 @@ Expose REST API App allows you to expose a public end-point URL, allowing you to
   
   Notification support
   Usage (REST API on how to invoked it):
-      `https://graph.api.smartthings.com/api/smartapps/installations/<smartAppId>/sendNotification?access_token=<your_access_token>`
-      payload: msg=<message_you_wish_to_send>
+      `https://graph.api.smartthings.com/api/smartapps/installations/<smartAppId>/sendNotification?access_token=<your_access_token>`  
+      `payload: msg=<message_you_wish_to_send>`
  
 ## How to install
 Get the code here: https://github.com/jbisson/SmartThingsPublic/blob/master/smartapps/jbisson/expose-rest-api.src/expose-rest-api.groovy
