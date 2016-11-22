@@ -13,10 +13,10 @@ Device handler that tries to simulate an hardware flic button. Here's what it ca
  Once the event is inside the smartthing, you could use CoRE (Community’s own Rule Engine) for defining your own rule. (ie: When I click on my flicButton do this, ect)
  https://community.smartthings.com/t/release-candidate-core-communitys-own-rule-engine/57972
  
- The mapping between action and button numbers are as follow, this will be very usefl if using CoRE smartApps:
-     Click event:         Button#1 -> pushed
-     Double Click event:  Button#2 -> pushed
-     Hold event           Button#3 -> pushed
+ The mapping between action and button numbers are as follow, this will be very usefl if using CoRE smartApps:  
+     Click event:         Button#1 -> pushed  
+     Double Click event:  Button#2 -> pushed  
+     Hold event           Button#3 -> pushed  
  
  
 ## How to install
