@@ -1,23 +1,25 @@
 /**
  *
- *  Device handler that tries to simulate an hardware flic button.
+ *  Device handler used for the flic button.
+ *  
+ *  The mapping between action and button numbers are as follow, this will be very usefl if using CoRE smartApps:
+ *    Click event:         Button#1 -> pushed
+ *    Double Click event:  Button#2 -> pushed
+ *    Hold event           Button#3 -> pushed
  * 
- * This device handler works really well with the expose-rest api app. https://github.com/jbisson/SmartThingsPublic/blob/master/ExposeRestApi.md
- * Combined the two together, it allows you to receive click, doubleClick and hold events from a real flic button (hardware).
- * 
- * Once the event is inside the smartthing, you could use CoRE (Community’s own Rule Engine) for defining your own rule. (ie: When I click on my flicButton do this, ect)
- * https://community.smartthings.com/t/release-candidate-core-communitys-own-rule-engine/57972
- * 
+ *  Copyright 2016 jbisson
  *
  *
  *  Revision History
  *  ==============================================
- *  2016-11-13 Version 1.0.0  Initial commit
+ *  2016-11-22 Version 1.1.0  Changed the button to use 3 internal button allowing mapping between an action to a button number. 
+ *                            (Button#1 -> Click, Button#2 -> doubleClick, Button#3 -> Hold).
+ *  2016-08-21 Version 1.0.0  Initial commit
  *
  */
  
 def clientVersion() {
-    return "1.0.0"
+    return "1.1.0"
 }
 
 metadata {
@@ -113,6 +115,7 @@ def updated() {
     sendEvent(name: "flicColor", value: "$colorEnum", isStateChange: true)
     sendEvent(name: "icon", value: "$colorEnum", displayed: false, isStateChange: true)    
     sendEvent(name: "buttonNumber", value: "$buttonNumberPref", isStateChange: true)
+    sendEvent(name: "numberOfButtons", value: "3", isStateChange: true)
     
     sendEvent(name: "status", value: "---", displayed: false)
     sendEvent(name: "singleClickStatus", displayed: false, value: "")
@@ -124,7 +127,7 @@ def click() {
 	logDebug "click() $colorEnum"	
     
     def currentDateTime = new Date().format('yyyy-M-d hh:mm:ss', location.timeZone)
-    sendEvent(name: "button", value: "clicked", data: [buttonNumber: 1], descriptionText: "$device.displayName was clicked", isStateChange: true)        
+    sendEvent(name: "button", value: "pushed", data: [buttonNumber: 1], descriptionText: "$device.displayName was clicked", isStateChange: true)        
     sendEvent(name: "status", value: "Last event: 'click' at ${currentDateTime}", displayed: false)
     sendEvent(name: "singleClickStatus", value: currentDateTime, displayed: false)
     
@@ -135,7 +138,7 @@ def doubleClick() {
 	logDebug "doubleClick()"
     
 	def currentDateTime = new Date().format('yyyy-M-d hh:mm:ss', location.timeZone)	
-    sendEvent(name: "button", value: "doubleClicked", data: [buttonNumber: 1], descriptionText: "$device.displayName was double clicked", isStateChange: true)    
+    sendEvent(name: "button", value: "pushed", data: [buttonNumber: 2], descriptionText: "$device.displayName was double clicked", isStateChange: true)    
     sendEvent(name: "status", value: "Last event: 'double click' at ${currentDateTime}", displayed: false)
     sendEvent(name: "doubleClickStatus", value: currentDateTime, displayed: false)
     
@@ -146,7 +149,7 @@ def hold() {
 	logDebug "hold()"
     
     def currentDateTime = new Date().format('yyyy-M-d hh:mm:ss', location.timeZone)
-    sendEvent(name: "button", value: "held", data: [buttonNumber: 1], descriptionText: "$device.displayName was held", isStateChange: true)    
+    sendEvent(name: "button", value: "pushed", data: [buttonNumber: 3], descriptionText: "$device.displayName was held", isStateChange: true)    
     sendEvent(name: "status", value: "Last event 'hold' at ${currentDateTime}", displayed: false)
     sendEvent(name: "holdStatus", value: currentDateTime, displayed: false)    
     
