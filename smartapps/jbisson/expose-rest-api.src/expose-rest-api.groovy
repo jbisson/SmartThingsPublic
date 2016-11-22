@@ -9,14 +9,13 @@
  *  Flic Button support: This app has been optimized to work best with flic button. You can see a step by step tutorial on how to set it up here: https://community.smartthings.com/t/flic-button/62951
  * 
  * 
- *  You will need to enable oAuth support for this app to work. 
- *  Once installed, go to https://graph.api.smartthings.com/ide/apps and click edit properties. In this screen
- *  - Creating a REST SmartApp Endpoint https://community.smartthings.com/t/tutorial-creating-a-rest-smartapp-endpoint/4331
+ *  You will need to enable oAuth support for this app to work. A step by step instruction to do so can be found here:
+ *  https://community.smartthings.com/t/flic-button/62951
  *
  *  Button support (works well with flic button handler): 
  *  Usage (REST API on how to invoked it):
- *     https://graph.api.smartthings.com/api/smartapps/installations/<smartAppId>/button/<btnColor>/<btnNumber>/<action>?access_token=<your_access_token>
- *     <smartAppId>: App id of your smart app
+ *     https://graph.api.smartthings.com/api/smartapps/installations/<installationId>/button/<btnColor>/<btnNumber>/<action>?access_token=<your_access_token>
+ *     <installationId>: InstallationId of your smartApp (use https://graph.api.smartthings.com/api/smartapps/endpoints?access_token=bcea5b37-1868-4418-a131-3c82a2e9eb90 to find it out)
  *     <your_access_token> access token used for authentication
  *     <btnColor>  : Color of your button (if using the flic handler integration options are: black, white, turquise, green, yellow)
  *     <btnNumber> : Button number identification used if you have more than one button with the same color 
@@ -37,12 +36,13 @@
  *
  *  Revision History
  *  ==============================================
+ *  2016-11-22 Version 1.0.1  No functional code change - documentation change.
  *  2016-08-21 Version 1.0.0  Initial commit
  *
  */
 
 def version() {
-    return "1.0.0 - 2016-08-22"
+    return "1.0.1 - 2016-11-22"
 }
 
 definition(
