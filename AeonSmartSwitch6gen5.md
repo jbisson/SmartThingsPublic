@@ -3,6 +3,7 @@
 Device handler used for the aeron smart switch gen5. Here's a list of features:
 
 - On/off switch mode
+- Energy cost (current and cumulative) based on how much you pay in your country/state/province
 - Led color configuration
 - Report frequency configuration (how often does the different values get updated)
 - Secure mode inclusion support
