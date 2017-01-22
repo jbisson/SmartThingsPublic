@@ -677,10 +677,10 @@ def refresh() {
     sendEvent(name: "currentEnergyCostMonth", value: "0", displayed: true)
     sendEvent(name: "currentEnergyCostYear", value: "0", displayed: true)
 
-    sendEvent(name: "cummulativeEnergyCostHour", value: "0", displayed: true)
-    sendEvent(name: "cummulativeEnergyCostWeek", value: "0", displayed: true)
-    sendEvent(name: "cummulativeEnergyCostMonth", value: "0", displayed: true)
-    sendEvent(name: "cummulativeEnergyCostYear", value: "0", displayed: true)
+    sendEvent(name: "cumulativeEnergyCostHour", value: "0", displayed: true)
+    sendEvent(name: "cumulativeEnergyCostWeek", value: "0", displayed: true)
+    sendEvent(name: "cumulativeEnergyCostMonth", value: "0", displayed: true)
+    sendEvent(name: "cumulativeEnergyCostYear", value: "0", displayed: true)
 
     delayBetween([
             formatCommand(zwave.switchMultilevelV1.switchMultilevelGet()),
