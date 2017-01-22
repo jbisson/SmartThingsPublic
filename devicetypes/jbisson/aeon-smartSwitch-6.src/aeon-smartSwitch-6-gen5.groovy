@@ -62,7 +62,7 @@
  */
 
 def clientVersion() {
-    return "5.1.0"
+    return "5.1.1"
 }
 
 metadata {
@@ -220,7 +220,7 @@ preferences {
     input name: "minimumChangeWatts", type: "number", title: "Minimum change in wattage for a report to be sent (0 - 100).\n", defaultValue: "25", range: "0..100", displayDuringSetup: true
     input name: "minimumChangePercent", type: "number", title: "Minimum change in percentage for a report to be sent (0 - 60000)\n", defaultValue: "5", range: "0..60000", displayDuringSetup: true
 
-    input name: "costPerKwh", type: "number", title: "Cost per kWh (Used for energy cost /per kWh)\n", defaultValue: "0.12", range: "0..1000", displayDuringSetup: true
+    input name: "costPerKwh", type: "decimal", title: "Cost per kWh (Used for energy cost /per kWh)\n", defaultValue: "0.12", displayDuringSetup: true
 
     input name: "includeWattInReport", type: "bool", title: "Include energy meter (W) in report?\n", defaultValue: "true", displayDuringSetup: true
     input name: "includeVoltageInReport", type: "bool", title: "Include voltage (V) in report?\n", defaultValue: "true", displayDuringSetup: true
