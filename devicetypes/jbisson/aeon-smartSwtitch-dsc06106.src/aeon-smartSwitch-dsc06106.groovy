@@ -5,10 +5,17 @@
  *  Copyright 2016 jbisson
  *  based on James P ('elasticdev'), Mr Lucky, lg kahn code.
  *
+ *
+ *  *  The energy cost (current) represent the amount of money you'll pay if the current load stay the same all the time
+ *  vs
+ *  The energy cost (cumulative) is the amount of money you'll pay based on the amount of energy used between now and
+ *  the last time you did a reset. You can clear this counter by hitting the reset icon.
+ *  This will take into account the variable aspect of your energy consumption.
  * 
  *
  *  Revision History
  *  ==============================================
+ *  2017-02-08 Version 5.1.0  Added energy meter cost per hours/week/month/year feature, fixed display issues
  *  2016-11-13 Version 4.0.5  Added force refresh report notification update preference
  *  2016-08-31 Version 4.0.4  Fixed fingerprint number.
  *  2016-08-12 Version 4.0.2  Added version in preference setting
@@ -38,7 +45,7 @@
  */
  
  def clientVersion() {
-    return "4.0.5"
+    return "5.1.0"
 }
 
 metadata {
@@ -85,12 +92,48 @@ metadata {
             state "default", label:'${currentValue} W'
         }
 
-        valueTile("energy", "device.energy", width: 2, height: 1, decoration: "flat") {
+        valueTile("energy", "device.energy", width: 3, height: 1, decoration: "flat") {
             state "default", label:'${currentValue} kWh'
         }
 
-        valueTile("statusText2", "device.statusText2", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
-            state "statusText2", label:'Since\n${currentValue}\nago'
+        standardTile("currentEnergyCostTxt", "currentEnergyCostTxt", width: 2, height: 1) {
+            state "default", label: 'Energy Cost (Current):'
+        }
+
+        valueTile("currentEnergyCostHour", "currentEnergyCostHour", width: 1, height: 1, decoration: "flat") {
+            state "default", label: 'Per Hour \n$${currentValue}'
+        }
+
+        valueTile("currentEnergyCostWeek", "currentEnergyCostWeek", width: 1, height: 1, decoration: "flat") {
+            state "default", label: 'Per Week \n$${currentValue}'
+        }
+
+        valueTile("currentEnergyCostMonth", "currentEnergyCostMonth", width: 1, height: 1, decoration: "flat") {
+            state "default", label: 'Per Month \n$${currentValue}'
+        }
+
+        valueTile("currentEnergyCostYear", "currentEnergyCostYear", width: 1, height: 1, decoration: "flat") {
+            state "default", label: 'Per Year \n$${currentValue}'
+        }
+
+        valueTile("cumulativeEnergyCostTxt", "cumulativeEnergyCostTxt", width: 2, height: 1) {
+            state "default", label: 'Energy Cost (Cumulative)\nSince ${currentValue}:'
+        }
+
+        valueTile("cumulativeEnergyCostHour", "cumulativeEnergyCostHour", width: 1, height: 1, decoration: "flat") {
+            state "default", label: 'Per Hour \n$${currentValue}'
+        }
+
+        valueTile("cumulativeEnergyCostWeek", "cumulativeEnergyCostWeek", width: 1, height: 1, decoration: "flat") {
+            state "default", label: 'Per Week \n$${currentValue}'
+        }
+
+        valueTile("cumulativeEnergyCostMonth", "cumulativeEnergyCostMonth", width: 1, height: 1, decoration: "flat") {
+            state "default", label: 'Per Month \n$${currentValue}'
+        }
+
+        valueTile("cumulativeEnergyCostYear", "cumulativeEnergyCostYear", width: 1, height: 1, decoration: "flat") {
+            state "default", label: 'Per Year \n$${currentValue}'
         }
 
         standardTile("refresh", "device.switch", decoration: "flat", width: 1, height: 1) {
@@ -110,7 +153,10 @@ metadata {
         }
         
         main(["mainPanel", "power","energy"] )
-        details(["mainPanel", "power", "energy", "statusText2", "refresh","reset","configure", "deviceInfo"])  
+        details(["mainPanel", "power", "energy", "currentEnergyCostTxt", "currentEnergyCostHour",
+                 "currentEnergyCostWeek", "currentEnergyCostMonth", "currentEnergyCostYear", "cumulativeEnergyCostTxt",
+                 "cumulativeEnergyCostHour", "cumulativeEnergyCostWeek", "cumulativeEnergyCostMonth",
+                 "cumulativeEnergyCostYear", "refresh","reset","configure", "deviceInfo"])
     }
 }
 
@@ -128,13 +174,15 @@ preferences {
     
     input name: "minimumChangeWatts", type: "number", title: "Minimum change in wattage for a report to be sent (0 - 100).\n", defaultValue: "25", range: "0..100"
     input name: "minimumChangePercent", type: "number", title: "Minimum change in percentage for a report to be sent (0 - 60000)\n", defaultValue: "5", range: "0..60000"
-    
+
+    input name: "costPerKwh", type: "decimal", title: "Cost per kWh (Used for energy cost /per kWh)\n", defaultValue: "0.12", displayDuringSetup: true
+
     input name: "includeWattInReport", type: "bool", title: "Include energy meter (W) in report?\n", defaultValue: "true"        
     input name: "includeCurrentUsageInReport", type: "bool", title: "Include current usage (kWh) in report?\n", defaultValue: "true"    
 	
 	input title: "", description: "Logging", type: "paragraph", element: "paragraph"
-    input name: "isLogLevelTrace", type: "bool", title: "Show trace log level ?\n", defaultValue: "false"
-    input name: "isLogLevelDebug", type: "bool", title: "Show debug log level ?\n", defaultValue: "true"
+    input name: "isLogLevelTrace", type: "bool", title: "Show trace log level ?\n", defaultValue: "false", displayDuringSetup: true
+    input name: "isLogLevelDebug", type: "bool", title: "Show debug log level ?\n", defaultValue: "true", displayDuringSetup: true
 }
 
 /*******************************************************************************
@@ -201,7 +249,7 @@ def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cm
  *  Short	value	0xFF for on, 0x00 for off
  */
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd) {	
-	return createEvent(name: "switch", value: cmd.value ? "on" : "off", displayed: true)
+	return createEvent(name: "switch", value: cmd.value ? "on" : "off", displayed: false)
 }
 
 /**
@@ -230,31 +278,43 @@ def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicSet cmd) {
  */
 def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
 	if (cmd.meterType == 1) {
-		def eventMap;
+        def eventList = []
 		if (cmd.scale == 0) {
      	    logDebug " got kwh $cmd.scaledMeterValue"
-			eventMap = [name: "energy", value: cmd.scaledMeterValue, unit: "kWh"]
+
+            BigDecimal costDecimal = ( costPerKwh as BigDecimal )
+            def batteryRunTimeHours = getBatteryRuntimeInHours()
+            eventList.push(internalCreateEvent([name: "energy", value: cmd.scaledMeterValue, unit: "kWh"]));
+
+            eventList.push(internalCreateEvent([name: "cumulativeEnergyCostTxt", value: getBatteryRuntime()]));
+            eventList.push(internalCreateEvent([name: "cumulativeEnergyCostHour", value: String.format("%5.2f", cmd.scaledMeterValue / batteryRunTimeHours * costDecimal)]));
+            eventList.push(internalCreateEvent([name: "cumulativeEnergyCostWeek", value: String.format("%5.2f", cmd.scaledMeterValue / batteryRunTimeHours * costDecimal * 24 * 7)]));
+            eventList.push(internalCreateEvent([name: "cumulativeEnergyCostMonth", value: String.format("%5.2f", cmd.scaledMeterValue / batteryRunTimeHours * costDecimal * 24 * 30)]));
+            eventList.push(internalCreateEvent([name: "cumulativeEnergyCostYear", value: String.format("%5.2f", cmd.scaledMeterValue / batteryRunTimeHours * costDecimal * 24 * 360)]));
 		} else if (cmd.scale == 1) {
         	logDebug " got kVAh $cmd.scaledMeterValue"
-			eventMap = [name: "energy", value: cmd.scaledMeterValue, unit: "kVAh"]
+            eventList.push(internalCreateEvent([name: "energy", value: cmd.scaledMeterValue, unit: "kVAh"]));
 		} else if (cmd.scale == 2) { 
         	logDebug " got wattage $cmd.scaledMeterValue"
             updatePowerStatus(Math.round(cmd.scaledMeterValue))
-			eventMap = [name: "power", value: Math.round(cmd.scaledMeterValue), unit: "W"]
+
+            eventList.push(internalCreateEvent([name: "power", value: Math.round(cmd.scaledMeterValue), unit: "W"]));
+            BigDecimal costDecimal = ( costPerKwh as BigDecimal )
+            eventList.push(internalCreateEvent([name: "currentEnergyCostHour", value: String.format("%5.2f", (cmd.scaledMeterValue / 1000) * costDecimal)]));
+            eventList.push(internalCreateEvent([name: "currentEnergyCostWeek", value: String.format("%5.2f", (cmd.scaledMeterValue / 1000) * 24 * 7 * costDecimal)]));
+            eventList.push(internalCreateEvent([name: "currentEnergyCostMonth", value: String.format("%5.2f", (cmd.scaledMeterValue / 1000) * 24 * 30 * costDecimal)]));
+            eventList.push(internalCreateEvent([name: "currentEnergyCostYear", value: String.format("%5.2f", (cmd.scaledMeterValue / 1000) * 24 * 360 * costDecimal)]));
 		} else if (cmd.scale == 4) { // Volts
             logDebug " got voltage $cmd.scaledMeterValue"
-           	eventMap = [name: "voltage", value: Math.round(cmd.scaledMeterValue), unit: "V"]
+            eventList.push(internalCreateEvent([name: "voltage", value: Math.round(cmd.scaledMeterValue), unit: "V"]));
 		} else if (cmd.scale == 5) { //amps scale 5 is amps even though not documented
             logDebug " got amperage = $cmd.scaledMeterValue"
-           	eventMap = [name: "amperage", value: cmd.scaledMeterValue, unit: "A"]
+            eventList.push(internalCreateEvent([name: "amperage", value: cmd.scaledMeterValue, unit: "A"]));
 		} else {
-			eventMap = [name: "electric", value: cmd.scaledMeterValue, unit: ["pulses", "V", "A", "R/Z", ""][cmd.scale - 3]]
+            eventList.push(internalCreateEvent([name: "electric", value: cmd.scaledMeterValue, unit: ["pulses", "V", "A", "R/Z", ""][cmd.scale - 3]]));
 		}
 		
-		if (forceStateChangeOnReport) {        
-			eventMap.isStateChange = true
-		}
-		return createEvent(eventMap);
+        return eventList
 	}
 }
 
@@ -265,7 +325,9 @@ def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
  *  Short	parameterNumber
  *  Short	size
  */
-def zwaveEvent(physicalgraph.zwave.commands.configurationv1.ConfigurationReport cmd) {    
+def zwaveEvent(physicalgraph.zwave.commands.configurationv1.ConfigurationReport cmd) {
+    logTrace "received ConfigurationReport for " + cmd.parameterNumber + " (hex:" + Integer.toHexString(cmd.parameterNumber) + ") cmd: " + cmd
+
     switch (cmd.parameterNumber) {
     	case 0x51:
         	logTrace "received device mode event"
@@ -303,10 +365,6 @@ def zwaveEvent(physicalgraph.zwave.commands.hailv1.Hail cmd) {
  *  Short	zWaveProtocolVersion
  */
 def zwaveEvent(physicalgraph.zwave.commands.versionv1.VersionReport cmd) {	
-    if (state.deviceInfo == null) {
-    	state.deviceInfo = [:]
-	}
-    
     state.deviceInfo['applicationVersion'] = "${cmd.applicationVersion}"
     state.deviceInfo['applicationSubVersion'] = "${cmd.applicationSubVersion}"
     state.deviceInfo['zWaveLibraryType'] = "${cmd.zWaveLibraryType}"
@@ -325,10 +383,6 @@ def zwaveEvent(physicalgraph.zwave.commands.versionv1.VersionReport cmd) {
  *
  */
 def zwaveEvent(physicalgraph.zwave.commands.manufacturerspecificv2.ManufacturerSpecificReport cmd) {    
-    if (state.deviceInfo == null) {
-    	state.deviceInfo = [:]
-	}
-    
     state.deviceInfo['manufacturerId'] = "${cmd.manufacturerId}"
     state.deviceInfo['manufacturerName'] = "${cmd.manufacturerName}"
     state.deviceInfo['productId'] = "${cmd.productId}"
@@ -513,7 +567,17 @@ def refresh() {
     
     sendEvent(name: "power", value: "0", displayed: true,, unit: "W")    
     sendEvent(name: "energy", value: "0", displayed: true,, unit: "kWh")
-    
+
+    sendEvent(name: "currentEnergyCostHour", value: "0", displayed: true)
+    sendEvent(name: "currentEnergyCostWeek", value: "0", displayed: true)
+    sendEvent(name: "currentEnergyCostMonth", value: "0", displayed: true)
+    sendEvent(name: "currentEnergyCostYear", value: "0", displayed: true)
+
+    sendEvent(name: "cumulativeEnergyCostHour", value: "0", displayed: true)
+    sendEvent(name: "cumulativeEnergyCostWeek", value: "0", displayed: true)
+    sendEvent(name: "cumulativeEnergyCostMonth", value: "0", displayed: true)
+    sendEvent(name: "cumulativeEnergyCostYear", value: "0", displayed: true)
+
 	delayBetween([
 		zwave.switchMultilevelV1.switchMultilevelGet().format(),
 		zwave.meterV3.meterGet(scale: 0).format(), // energy kWh		
@@ -524,7 +588,18 @@ def refresh() {
 /*******************************************************************************
  *	Methods                                                                    *
  ******************************************************************************/
- 
+
+/**
+ *  installed - Called when the device handling is being installed
+ */
+def installed() {
+    log.debug "installed() called"
+
+    if (state.deviceInfo == null) {
+        state.deviceInfo = [:]
+    }
+}
+
 /**
  *  updated - Called when the preferences of the device type are changed
  */
@@ -569,11 +644,14 @@ def getDeviceInfo() {
 }
 
 private updateStatus() {
-	if (state.energyMeterRuntimeStart != null) {
-    	sendEvent(name:"statusText2", value: "${getBatteryRuntime()}", displayed:false)
+    def sinceTime = ''
+    if (state.energyMeterRuntimeStart != null) {
+        sinceTime = "${getBatteryRuntime()}"
     } else {
-    	state.energyMeterRuntimeStart = now()
+        sinceTime = now()
     }
+
+    sendEvent(name: "statusText3", value: "Energy meter since: $sinceTime", displayed: false)
 }
 
 private updatePowerStatus(val) {
@@ -587,15 +665,23 @@ private updatePowerStatus(val) {
 private updateDeviceInfo() {
 	logTrace "updateDeviceInfo()"
     
-    def buffer = "Get Device Info";    
+    def buffer = "Get Device Info";
+    def switchStatus = "SWITCH ENABLED"
+    if (switchDisabled) {
+        switchStatus = "SWITCH DISABLED"
+    }
+
     if (state.deviceInfo != null) {
-    	buffer = "application Version: ${state.deviceInfo['applicationVersion']} Sub Version: ${state.deviceInfo['applicationSubVersion']}\n";
+        buffer = "$switchStatus\n";
+    	buffer += "application Version: ${state.deviceInfo['applicationVersion']} Sub Version: ${state.deviceInfo['applicationSubVersion']}\n";
         buffer += "zWaveLibrary Type: ${state.deviceInfo['zWaveLibraryType']}\n";
         buffer += "zWaveProtocol Version: ${state.deviceInfo['zWaveProtocolVersion']} Sub Version: ${state.deviceInfo['zWaveProtocolSubVersion']}\n";
                 
         buffer += "manufacturer Name: ${state.deviceInfo['manufacturerName']}\n";
         buffer += "manufacturer Id: ${state.deviceInfo['manufacturerId']}\n";        
         buffer += "product Id: ${state.deviceInfo['productId']} Type Id: ${state.deviceInfo['productTypeId']}\n";        
+    } else {
+        getDeviceInfo()
     }
         
 	return sendEvent(name:"deviceInfo", value: "$buffer", displayed:false)
@@ -622,6 +708,18 @@ private getBatteryRuntime() {
   }
 }
 
+private getBatteryRuntimeInHours() {
+    def currentmillis = now() - state.energyMeterRuntimeStart
+    def days = 0
+    def hours = 0
+    def mins = 0
+    def secs = 0
+    secs = (currentmillis / 1000)
+    mins = (secs / 60)
+    hours = (mins / 60)
+    return hours
+}
+
 void logDebug(str) {	
 	if (isLogLevelDebug) {    	
         log.debug str
@@ -632,4 +730,12 @@ void logTrace(str) {
 	if (isLogLevelTrace) {
         log.trace str 
 	}
+}
+
+def internalCreateEvent(event) {
+    if (forceStateChangeOnReport) {
+        event.isStateChange = true
+    }
+
+    return createEvent(event)
 }
