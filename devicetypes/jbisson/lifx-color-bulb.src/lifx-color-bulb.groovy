@@ -7,14 +7,15 @@
  *
  *  Revision History
  *  ==============================================
- *  2016-12-01 Version 1.0.1  Added rate (duration) support.
+ *  2017-02-09 Version 1.1.0 Added Device offline status
+ *  2016-12-01 Version 1.0.1 Added rate (duration) support.
  *
  *
  *
  */
  
  def clientVersion() {
-    return "1.0.1"
+    return "1.1.0"
 }
 
 metadata {
@@ -40,6 +41,7 @@ metadata {
 				attributeState "off", label:'${name}', action:"switch.on", icon:"http://hosted.lifx.co/smartthings/v1/196xOff.png", backgroundColor:"#ffffff", nextState:"turningOn"
 				attributeState "turningOn", label:'Turning on', action:"switch.off", icon:"http://hosted.lifx.co/smartthings/v1/196xOn.png", backgroundColor:"#79b821", nextState:"turningOff"
 				attributeState "turningOff", label:'Turning off', action:"switch.on", icon:"http://hosted.lifx.co/smartthings/v1/196xOff.png", backgroundColor:"#ffffff", nextState:"turningOn"
+				attributeState "offline", label:'Offline', action:"refresh", icon:"http://hosted.lifx.co/smartthings/v1/196xOff.png", backgroundColor:"#FF0000"
 			}
 
 			tileAttribute ("device.level", key: "SLIDER_CONTROL") {
@@ -236,6 +238,7 @@ def refresh() {
 		state.online = false
 		sendEvent(name: "DeviceWatch-DeviceStatusUpdate", value: "offline", displayed: false)
  		log.warn "$device is Offline"
+		sendEvent(name: "switch", value: "offline")
 		return []
 	} else if (resp.status != 200) {
 		log.error("Unexpected result in refresh(): [${resp.status}] ${resp.data}")
@@ -260,7 +263,8 @@ def refresh() {
 	} else {
 		sendEvent(name: "DeviceWatch-DeviceStatus", value: "offline", displayed: false)
 		log.warn "$device is Offline"
-}
+		sendEvent(name: "switch", value: "offline")
+	}
 }
 
 def selector() {
