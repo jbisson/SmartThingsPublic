@@ -22,6 +22,7 @@
  *
  *  Revision History
  *  ==============================================
+ *  2017-02-24 Version 5.1.2  Bug fixed around getDeviceInfo
  *  2017-01-21 Version 5.1.0  Added energy meter cost per hours/week/month/year feature, fixed display issues
  *  2016-11-13 Version 5.0.0  Added Z-Wave secure inclusion support (note that you'll need to manually set it up during configuration)
  *  2016-11-12 Version 4.0.5  Added AT&T rebrand fingerprint + added force refresh report notification update preference
@@ -62,7 +63,7 @@
  */
 
 def clientVersion() {
-    return "5.1.1"
+    return "5.1.2"
 }
 
 metadata {
@@ -300,7 +301,9 @@ def zwaveEvent(physicalgraph.zwave.commands.securityv1.NetworkKeyVerify cmd) {
  *  Short	value	0xFF for on, 0x00 for off
  */
 def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinarySet cmd) {
-    return createEvent(name: "switch", value: cmd.value ? "on" : "off")
+    createEvent(name: "switch", value: cmd.switchValue ? "on" : "off")
+
+    //return createEvent(name: "switch", value: cmd.value ? "on" : "off")
 }
 
 /**
@@ -805,27 +808,43 @@ private updateDeviceInfo() {
     logTrace "updateDeviceInfo()"
 
     def buffer = "Get Device Info";
-    def switchStatus = "SWITCH ENABLED"
+    def newBuffer = null;
+
+    def switchStatus = "SWITCH ENABLED\n"
     if (switchDisabled) {
-        switchStatus = "SWITCH DISABLED"
+        switchStatus = "SWITCH DISABLED\n"
     }
 
-    if (state.deviceInfo != null) {
-        buffer = "$switchStatus\n";
-        buffer += "app Version: ${state.deviceInfo['applicationVersion']} Sub Version: ${state.deviceInfo['applicationSubVersion']}\n";
-        buffer += "zWaveLibrary Type: ${state.deviceInfo['zWaveLibraryType']}\n";
-        buffer += "zWaveProtocol Version: ${state.deviceInfo['zWaveProtocolVersion']} Sub Version: ${state.deviceInfo['zWaveProtocolSubVersion']}\n";
-        buffer += "secure inclusion: ${state.deviceInfo['secureInclusion'] || secureInclusionOverride}\n";
-
-        buffer += "manufacturer Name: ${state.deviceInfo['manufacturerName']}\n";
-        buffer += "manufacturer Id: ${state.deviceInfo['manufacturerId']}\n";
-        buffer += "product Id: ${state.deviceInfo['productId']} Type Id: ${state.deviceInfo['productTypeId']}\n";
-        buffer += "firmwareId: ${state.deviceInfo['firmwareId']} checksum: ${state.deviceInfo['checksum']}\n";
-    } else {
+    if (state.deviceInfo['applicationVersion'] == null ||
+        state.deviceInfo['manufacturerName'] == null) {
         getDeviceInfo()
+    } else {
+        newBuffer = "${switchStatus}"
     }
 
-    return sendEvent(name: "deviceInfo", value: "$buffer", displayed: false)
+    if (state.deviceInfo['applicationVersion'] != null) {
+        if (newBuffer == null) {
+            newBuffer = "${switchStatus}"
+        }
+
+        newBuffer += "app Version: ${state.deviceInfo['applicationVersion']} Sub Version: ${state.deviceInfo['applicationSubVersion']}\n";
+        newBuffer += "zWaveLibrary Type: ${state.deviceInfo['zWaveLibraryType']}\n";
+        newBuffer += "zWaveProtocol Version: ${state.deviceInfo['zWaveProtocolVersion']} Sub Version: ${state.deviceInfo['zWaveProtocolSubVersion']}\n";
+        newBuffer += "secure inclusion: ${state.deviceInfo['secureInclusion'] || secureInclusionOverride}\n";
+    }
+
+    if (state.deviceInfo['manufacturerName'] != null) {
+        if (newBuffer == null) {
+            newBuffer = "${switchStatus}"
+        }
+
+        newBuffer += "manufacturer Name: ${state.deviceInfo['manufacturerName']}\n";
+        newBuffer += "manufacturer Id: ${state.deviceInfo['manufacturerId']}\n";
+        newBuffer += "product Id: ${state.deviceInfo['productId']} Type Id: ${state.deviceInfo['productTypeId']}\n";
+        newBuffer += "firmwareId: ${state.deviceInfo['firmwareId']} checksum: ${state.deviceInfo['checksum']}\n";
+    }
+
+    return sendEvent(name: "deviceInfo", value: "$newBuffer", displayed: false)
 }
 
 private getBatteryRuntime() {
