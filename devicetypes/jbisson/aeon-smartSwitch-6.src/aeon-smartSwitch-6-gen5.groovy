@@ -22,7 +22,7 @@
  *
  *  Revision History
  *  ==============================================
- *  2017-02-24 Version 5.1.2  Bug fixed around getDeviceInfo
+ *  2017-02-24 Version 5.1.3  Bug fixed around getDeviceInfo
  *  2017-01-21 Version 5.1.0  Added energy meter cost per hours/week/month/year feature, fixed display issues
  *  2016-11-13 Version 5.0.0  Added Z-Wave secure inclusion support (note that you'll need to manually set it up during configuration)
  *  2016-11-12 Version 4.0.5  Added AT&T rebrand fingerprint + added force refresh report notification update preference
@@ -63,7 +63,7 @@
  */
 
 def clientVersion() {
-    return "5.1.2"
+    return "5.1.3"
 }
 
 metadata {
