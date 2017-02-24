@@ -22,7 +22,7 @@
  *
  *  Revision History
  *  ==============================================
- *  2017-02-24 Version 5.1.3  Bug fixed around getDeviceInfo
+ *  2017-02-24 Version 5.1.4  Bug fixed around getDeviceInfo
  *  2017-01-21 Version 5.1.0  Added energy meter cost per hours/week/month/year feature, fixed display issues
  *  2016-11-13 Version 5.0.0  Added Z-Wave secure inclusion support (note that you'll need to manually set it up during configuration)
  *  2016-11-12 Version 4.0.5  Added AT&T rebrand fingerprint + added force refresh report notification update preference
@@ -63,7 +63,7 @@
  */
 
 def clientVersion() {
-    return "5.1.3"
+    return "5.1.4"
 }
 
 metadata {
@@ -806,6 +806,10 @@ private updateStatus() {
 
 private updateDeviceInfo() {
     logTrace "updateDeviceInfo()"
+	
+    if (state.deviceInfo == null) {
+        state.deviceInfo = [:]
+	}
 
     def buffer = "Get Device Info";
     def newBuffer = null;
@@ -815,15 +819,14 @@ private updateDeviceInfo() {
         switchStatus = "SWITCH DISABLED\n"
     }
 
-    if (state.deviceInfo == null ||
-        state.deviceInfo['applicationVersion'] == null ||
+    if (state.deviceInfo['applicationVersion'] == null ||
         state.deviceInfo['manufacturerName'] == null) {
         getDeviceInfo()
     } else {
         newBuffer = "${switchStatus}"
     }
 
-    if (state.deviceInfo != null && state.deviceInfo['applicationVersion'] != null) {
+    if (state.deviceInfo['applicationVersion'] != null) {
         if (newBuffer == null) {
             newBuffer = "${switchStatus}"
         }
@@ -834,7 +837,7 @@ private updateDeviceInfo() {
         newBuffer += "secure inclusion: ${state.deviceInfo['secureInclusion'] || secureInclusionOverride}\n";
     }
 
-    if (state.deviceInfo != null && state.deviceInfo['manufacturerName'] != null) {
+    if (state.deviceInfo['manufacturerName'] != null) {
         if (newBuffer == null) {
             newBuffer = "${switchStatus}"
         }
