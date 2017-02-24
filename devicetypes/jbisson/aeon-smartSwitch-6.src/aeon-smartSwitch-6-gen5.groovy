@@ -815,14 +815,15 @@ private updateDeviceInfo() {
         switchStatus = "SWITCH DISABLED\n"
     }
 
-    if (state.deviceInfo['applicationVersion'] == null ||
+    if (state.deviceInfo == null ||
+        state.deviceInfo['applicationVersion'] == null ||
         state.deviceInfo['manufacturerName'] == null) {
         getDeviceInfo()
     } else {
         newBuffer = "${switchStatus}"
     }
 
-    if (state.deviceInfo['applicationVersion'] != null) {
+    if (state.deviceInfo != null && state.deviceInfo['applicationVersion'] != null) {
         if (newBuffer == null) {
             newBuffer = "${switchStatus}"
         }
@@ -833,7 +834,7 @@ private updateDeviceInfo() {
         newBuffer += "secure inclusion: ${state.deviceInfo['secureInclusion'] || secureInclusionOverride}\n";
     }
 
-    if (state.deviceInfo['manufacturerName'] != null) {
+    if (state.deviceInfo != null && state.deviceInfo['manufacturerName'] != null) {
         if (newBuffer == null) {
             newBuffer = "${switchStatus}"
         }
