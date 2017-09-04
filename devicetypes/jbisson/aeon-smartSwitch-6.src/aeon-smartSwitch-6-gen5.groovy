@@ -22,6 +22,9 @@
  *
  *  Revision History
  *  ==============================================
+ *  2017-09-04 Version 5.2.0  Removed defaultValues on preference screen as a work-around for a platform bug, crash protection fixes
+ *  2017-09-02 Version 5.1.6  More display clean-up and fixed reversed ranges on min watts/percent change in report prefs (Nezmo)
+ *  2017-08-15 Version 5.1.5  Cleaned-up display for iOS and other display issues (Nezmo)
  *  2017-02-24 Version 5.1.4  Bug fixed around getDeviceInfo
  *  2017-01-21 Version 5.1.0  Added energy meter cost per hours/week/month/year feature, fixed display issues
  *  2016-11-13 Version 5.0.0  Added Z-Wave secure inclusion support (note that you'll need to manually set it up during configuration)
@@ -41,7 +44,7 @@
  *  Z-Wave Supported Command Classes:
  *  Code Name					Version
  *  ==== ======================================	=======
- *  0x5E ??
+ *  0x5E COMMAND_CLASS_ZWAVE_PLUS_INFO
  *  0x25 COMMAND_CLASS_SWITCH_BINARY          V1                 Implemented
  *  0x26 COMMAND_CLASS_SWITCH_MULTILEVEL      V3 (new in gen5)   Implemented - not used
  *  0x32 COMMAND_CLASS_METER                  V3                 Implemented
@@ -63,7 +66,7 @@
  */
 
 def clientVersion() {
-    return "5.1.4"
+    return "5.2.0"
 }
 
 metadata {
@@ -99,75 +102,79 @@ metadata {
     tiles(scale: 2) {
         multiAttributeTile(name: "mainPanel", type: "lighting", width: 6, height: 4, canChangeIcon: true) {
             tileAttribute("device.switch", key: "PRIMARY_CONTROL") {
-                attributeState "on", label: '${name}', action: "switch.off", icon: "st.lights.philips.hue-single", backgroundColor: "#79b821", nextState: "turningOff"
-                attributeState "off", label: '${name}', action: "switch.on", icon: "st.lights.philips.hue-single", backgroundColor: "#ffffff", nextState: "turningOn"
-                attributeState "turningOn", label: '${name}', action: "switch.off", icon: "st.lights.philips.hue-single", backgroundColor: "#79b821", nextState: "turningOff"
-                attributeState "turningOff", label: '${name}', action: "switch.on", icon: "st.lights.philips.hue-single", backgroundColor: "#ffffff", nextState: "turningOn"
+                attributeState "on", label: '${name}', action: "switch.off", icon: "st.Appliances.appliances17", backgroundColor: "#00a0dc", nextState: "turningOff"
+                attributeState "off", label: '${name}', action: "switch.on", icon: "st.Appliances.appliances17", backgroundColor: "#ffffff", nextState: "turningOn"
+                attributeState "turningOn", label: '${name}', action: "switch.off", icon: "st.Appliances.appliances17", backgroundColor: "#00a0dc", nextState: "turningOff"
+                attributeState "turningOff", label: '${name}', action: "switch.on", icon: "st.Appliances.appliances17", backgroundColor: "#ffffff", nextState: "turningOn"
             }
             tileAttribute("statusText3", key: "SECONDARY_CONTROL") {
-                attributeState "statusText3", label: '${currentValue}', icon: "st.Appliances.appliances17"
+                attributeState "statusText3", label: '${currentValue}'
             }
         }
-        standardTile("deviceMode", "deviceMode", canChangeIcon: true, canChangeBackground: true, width: 2, height: 2) {
+        standardTile("deviceMode", "deviceMode", canChangeIcon: true, canChangeBackground: false, width: 2, height: 2) {
             state "energy", label: 'energy', action: "momentary", icon: "http://mail.lgk.com/aeonv6orange.png"
             state "momentary", label: 'momentary', action: "nightLight", icon: "http://mail.lgk.com/aeonv6white.png"
             state "nightLight", label: 'NightLight', action: "energy", icon: "http://mail.lgk.com/aeonv6blue.png"
         }
 
-        valueTile("power", "device.power", width: 2, height: 1) {
-            state "default", label: '${currentValue} W'
+        valueTile("power", "device.power", width: 2, height: 1, decoration: "flat") {
+            state "default", label: '${currentValue} W', backgroundColors:[
+                    [value: 0, color: "#44b621"],
+                    [value: 500, color: "#e86d13"],
+                    [value: 1000, color: "#d04e00"]
+            ]
         }
 
         valueTile("energy", "device.energy", width: 2, height: 1, decoration: "flat") {
             state "default", label: '${currentValue} kWh'
         }
 
-        valueTile("amperage", "device.amperage", width: 2, height: 1) {
+        valueTile("amperage", "device.amperage", width: 2, height: 1, decoration: "flat") {
             state "default", label: '${currentValue} A'
         }
 
-        valueTile("voltage", "device.voltage", width: 2, height: 1) {
+        valueTile("voltage", "device.voltage", width: 2, height: 1, decoration: "flat") {
             state "default", label: '${currentValue} v'
         }
 
-        standardTile("currentEnergyCostTxt", "currentEnergyCostTxt", width: 2, height: 1) {
-            state "default", label: 'Energy Cost (Current):'
+        valueTile("currentEnergyCostTxt", "currentEnergyCostTxt", width: 2, height: 1, decoration: "flat") {
+            state "default", label: 'Energy Cost\n(Current):'
         }
 
         valueTile("currentEnergyCostHour", "currentEnergyCostHour", width: 1, height: 1, decoration: "flat") {
-            state "default", label: 'Per Hour \n$${currentValue}'
+            state "default", label: 'Per\nHour\n$${currentValue}'
         }
 
         valueTile("currentEnergyCostWeek", "currentEnergyCostWeek", width: 1, height: 1, decoration: "flat") {
-            state "default", label: 'Per Week \n$${currentValue}'
+            state "default", label: 'Per\nWeek\n$${currentValue}'
         }
 
         valueTile("currentEnergyCostMonth", "currentEnergyCostMonth", width: 1, height: 1, decoration: "flat") {
-            state "default", label: 'Per Month \n$${currentValue}'
+            state "default", label: 'Per\nMonth\n$${currentValue}'
         }
 
         valueTile("currentEnergyCostYear", "currentEnergyCostYear", width: 1, height: 1, decoration: "flat") {
-            state "default", label: 'Per Year \n$${currentValue}'
+            state "default", label: 'Per\nYear\n$${currentValue}'
         }
 
-        valueTile("cumulativeEnergyCostTxt", "cumulativeEnergyCostTxt", width: 2, height: 1) {
-            state "default", label: 'Energy Cost (Cumulative)\nSince ${currentValue}:'
+        valueTile("cumulativeEnergyCostTxt", "cumulativeEnergyCostTxt", width: 2, height: 1, decoration: "flat") {
+            state "default", label: 'Energy Cost\n(Cumulative)\nSince ${currentValue}:'
         }
 
         valueTile("cumulativeEnergyCostHour", "cumulativeEnergyCostHour", width: 1, height: 1, decoration: "flat") {
-            state "default", label: 'Per Hour \n$${currentValue}'
+            state "default", label: 'Per\nHour \n$${currentValue}'
         }
 
         valueTile("cumulativeEnergyCostWeek", "cumulativeEnergyCostWeek", width: 1, height: 1, decoration: "flat") {
-            state "default", label: 'Per Week \n$${currentValue}'
+            state "default", label: 'Per\nWeek\n$${currentValue}'
         }
 
         valueTile("cumulativeEnergyCostMonth", "cumulativeEnergyCostMonth", width: 1, height: 1, decoration: "flat") {
-            state "default", label: 'Per Month \n$${currentValue}'
+            state "default", label: 'Per\nMonth\n$${currentValue}'
         }
 
         valueTile("cumulativeEnergyCostYear", "cumulativeEnergyCostYear", width: 1, height: 1, decoration: "flat") {
-            state "default", label: 'Per Year \n$${currentValue}'
+            state "default", label: 'Per\nYear \n$${currentValue}'
         }
 
         controlTile("levelSliderControl", "device.brightnessLevel", "slider", width: 2, height: 1) {
@@ -183,7 +190,7 @@ metadata {
         }
 
         standardTile("reset", "device.energy", decoration: "flat", width: 2, height: 2) {
-            state "default", label: 'reset', action: "reset"
+            state "default", label: 'reset', action: "reset", icon: "st.secondary.refresh-icon"
         }
 
         controlTile("rgbSelector", "device.color", "color", height: 3, width: 2) {
@@ -207,30 +214,30 @@ metadata {
 }
 
 preferences {
-    input title: "", description: "Aeon Multiswitch 6 (gen5) v${clientVersion()}", displayDuringSetup: true, type: "paragraph", element: "paragraph"
+    input title: "", description: "Aeon Smart Switch 6 (gen5) v${clientVersion()}", displayDuringSetup: true, type: "paragraph", element: "paragraph"
 
-    input name: "switchDisabled", type: "bool", title: "Disable switch on/off\n", defaultValue: "false", displayDuringSetup: true
-    input name: "refreshInterval", type: "number", title: "Refresh interval \n\nSet the refresh time interval (secondes) between each reports.\n", defaultValue: "300", displayDuringSetup: true
+    input name: "switchDisabled", type: "bool", title: "Disable switch on/off\n", defaultValue: "false", displayDuringSetup: true, required: true
+    input name: "refreshInterval", type: "number", title: "Refresh interval \n\nSet the refresh time interval (seconds) between each report [Default (300)].\n", displayDuringSetup: true, required: true
     input name: "switchAll", type: "enum", title: "Respond to switch all?\n", description: "How does switch respond to the 'Switch All' command", options: ["Disabled", "Off Enabled", "On Enabled", "On and Off Enabled"], defaultValue: "On and Off Enabled", displayDuringSetup: true, required: false
-    input name: "forceStateChangeOnReport", type: "bool", title: "Force state change when receiving a report ? If true, you'll always get notification even if report data doesn't change.\n", defaultValue: "false", displayDuringSetup: true
-    input name: "secureInclusionOverride", type: "bool", title: "Is this device in secure inclusive mode?\n", defaultValue: "false", displayDuringSetup: true
+    input name: "forceStateChangeOnReport", type: "bool", title: "Force state change when receiving a report ? If true, you'll always get notification even if report data doesn't change.\n", defaultValue: "false", displayDuringSetup: true, required: true
+    input name: "secureInclusionOverride", type: "bool", title: "Is this device in secure inclusive mode?\n", defaultValue: "false", displayDuringSetup: true, required: true
 
-    input name: "onlySendReportIfValueChange", type: "bool", title: "Only send report if value change (either in terms of wattage or a %)\n", defaultValue: "false", displayDuringSetup: true
-    input title: "", description: "The next two parameters are only working if the 'only send report' is set to true.", type: "paragraph", element: "paragraph", displayDuringSetup: true
+    input name: "onlySendReportIfValueChange", type: "bool", title: "Only send report if value change (either in terms of wattage or a %)\n", defaultValue: "false", displayDuringSetup: true, required: true
+    input title: "", description: "The next two parameters are only functional if the 'only send report' is set to true.", type: "paragraph", element: "paragraph", displayDuringSetup: true, required: true
 
-    input name: "minimumChangeWatts", type: "number", title: "Minimum change in wattage for a report to be sent (0 - 100).\n", defaultValue: "25", range: "0..100", displayDuringSetup: true
-    input name: "minimumChangePercent", type: "number", title: "Minimum change in percentage for a report to be sent (0 - 60000)\n", defaultValue: "5", range: "0..60000", displayDuringSetup: true
+    input name: "minimumChangeWatts", type: "number", title: "Minimum change in wattage for a report to be sent (0 - 60000) [Default (25)].\n", range: "0..60000", displayDuringSetup: true, required: true
+    input name: "minimumChangePercent", type: "number", title: "Minimum change in percentage for a report to be sent (0 - 100) [Default (5)]\n", range: "0..100", displayDuringSetup: true, required: true
 
-    input name: "costPerKwh", type: "decimal", title: "Cost per kWh (Used for energy cost /per kWh)\n", defaultValue: "0.12", displayDuringSetup: true
+    input name: "costPerKwh", type: "decimal", title: "Cost per kWh (Used for energy cost /per kWh) [Default (0.12)]\n", displayDuringSetup: true, required: true
 
-    input name: "includeWattInReport", type: "bool", title: "Include energy meter (W) in report?\n", defaultValue: "true", displayDuringSetup: true
-    input name: "includeVoltageInReport", type: "bool", title: "Include voltage (V) in report?\n", defaultValue: "true", displayDuringSetup: true
-    input name: "includeCurrentInReport", type: "bool", title: "Include current (A) in report?\n", defaultValue: "true", displayDuringSetup: true
-    input name: "includeCurrentUsageInReport", type: "bool", title: "Include current usage (kWh) in report?\n", defaultValue: "true", displayDuringSetup: true
+    input name: "includeWattInReport", type: "bool", title: "Include energy meter (W) in report?\n", defaultValue: "true", displayDuringSetup: true, required: true
+    input name: "includeVoltageInReport", type: "bool", title: "Include voltage (V) in report?\n", defaultValue: "true", displayDuringSetup: true, required: true
+    input name: "includeCurrentInReport", type: "bool", title: "Include current (A) in report?\n", defaultValue: "true", displayDuringSetup: true, required: true
+    input name: "includeCurrentUsageInReport", type: "bool", title: "Include current usage (kWh) in report?\n", defaultValue: "true", displayDuringSetup: true, required: true
 
     input title: "", description: "Logging", type: "paragraph", element: "paragraph"
-    input name: "isLogLevelTrace", type: "bool", title: "Show trace log level ?\n", defaultValue: "false", displayDuringSetup: true
-    input name: "isLogLevelDebug", type: "bool", title: "Show debug log level ?\n", defaultValue: "true", displayDuringSetup: true
+    input name: "isLogLevelTrace", type: "bool", title: "Show trace log level ?\n", defaultValue: "false", displayDuringSetup: true, required: true
+    input name: "isLogLevelDebug", type: "bool", title: "Show debug log level ?\n", defaultValue: "true", displayDuringSetup: true, required: true
 }
 
 /*******************************************************************************
@@ -249,6 +256,11 @@ def parse(String description) {
     logTrace "parse: '$description'"
 
     if (description != "updated") {
+        if (description.contains("command: 5E02")) {
+            logInfo "Ignoring command 5E02 has it's not supported by the platform."
+            return
+        }
+
         def cmd = zwave.parse(description, [0x98: 1, 0x20: 1, 0x26: 3, 0x70: 1, 0x32: 3])
         logTrace "cmd: '$cmd'"
 
@@ -256,7 +268,7 @@ def parse(String description) {
             result = zwaveEvent(cmd)
             //log.debug("'$description' parsed to $result $result?.name")
         } else {
-            log.error "Couldn't zwave.parse '$description'"
+            logError "Couldn't zwave.parse '$description'"
         }
     }
 
@@ -278,7 +290,7 @@ def zwaveEvent(physicalgraph.zwave.commands.securityv1.SecurityMessageEncapsulat
     if (encapsulatedCommand) {
         return zwaveEvent(encapsulatedCommand)
     } else {
-        log.error "Unable to extract encapsulated cmd from $cmd"
+        logError "Unable to extract encapsulated cmd from $cmd"
     }
 }
 
@@ -366,6 +378,12 @@ def zwaveEvent(physicalgraph.zwave.commands.switchmultilevelv3.SwitchMultilevelR
 def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
     if (cmd.meterType == 1) {
         def eventList = []
+
+        if ("$costPerKwh" == "null") {
+            logError "costPerKwh is null, please go through the configuration page first"
+            return
+        }
+
         if (cmd.scale == 0) {
             logDebug " got kwh $cmd.scaledMeterValue"
 
@@ -376,8 +394,8 @@ def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
             eventList.push(internalCreateEvent([name: "cumulativeEnergyCostTxt", value: getBatteryRuntime()]));
             eventList.push(internalCreateEvent([name: "cumulativeEnergyCostHour", value: String.format("%5.2f", cmd.scaledMeterValue / batteryRunTimeHours * costDecimal)]));
             eventList.push(internalCreateEvent([name: "cumulativeEnergyCostWeek", value: String.format("%5.2f", cmd.scaledMeterValue / batteryRunTimeHours * costDecimal * 24 * 7)]));
-            eventList.push(internalCreateEvent([name: "cumulativeEnergyCostMonth", value: String.format("%5.2f", cmd.scaledMeterValue / batteryRunTimeHours * costDecimal * 24 * 30)]));
-            eventList.push(internalCreateEvent([name: "cumulativeEnergyCostYear", value: String.format("%5.2f", cmd.scaledMeterValue / batteryRunTimeHours * costDecimal * 24 * 360)]));
+            eventList.push(internalCreateEvent([name: "cumulativeEnergyCostMonth", value: String.format("%5.2f", cmd.scaledMeterValue / batteryRunTimeHours * costDecimal * 24 * 30.42)]));
+            eventList.push(internalCreateEvent([name: "cumulativeEnergyCostYear", value: String.format("%5.2f", cmd.scaledMeterValue / batteryRunTimeHours * costDecimal * 24 * 365)]));
         } else if (cmd.scale == 1) {
             logDebug " got kVAh $cmd.scaledMeterValue"
             eventList.push(internalCreateEvent([name: "energy", value: cmd.scaledMeterValue, unit: "kVAh"]));
@@ -387,8 +405,8 @@ def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
             BigDecimal costDecimal = ( costPerKwh as BigDecimal )
             eventList.push(internalCreateEvent([name: "currentEnergyCostHour", value: String.format("%5.2f", (cmd.scaledMeterValue / 1000) * costDecimal)]));
             eventList.push(internalCreateEvent([name: "currentEnergyCostWeek", value: String.format("%5.2f", (cmd.scaledMeterValue / 1000) * 24 * 7 * costDecimal)]));
-            eventList.push(internalCreateEvent([name: "currentEnergyCostMonth", value: String.format("%5.2f", (cmd.scaledMeterValue / 1000) * 24 * 30 * costDecimal)]));
-            eventList.push(internalCreateEvent([name: "currentEnergyCostYear", value: String.format("%5.2f", (cmd.scaledMeterValue / 1000) * 24 * 360 * costDecimal)]));
+            eventList.push(internalCreateEvent([name: "currentEnergyCostMonth", value: String.format("%5.2f", (cmd.scaledMeterValue / 1000) * 24 * 30.42 * costDecimal)]));
+            eventList.push(internalCreateEvent([name: "currentEnergyCostYear", value: String.format("%5.2f", (cmd.scaledMeterValue / 1000) * 24 * 365 * costDecimal)]));
         } else if (cmd.scale == 4) { // Volts
             logDebug " got voltage $cmd.scaledMeterValue"
             eventList.push(internalCreateEvent([name: "voltage", value: Math.round(cmd.scaledMeterValue), unit: "V"]));
@@ -519,7 +537,11 @@ def zwaveEvent(physicalgraph.zwave.commands.firmwareupdatemdv2.FirmwareMdReport 
  *  Required for the "Configuration" capability
  */
 def configure() {
-    logDebug "configure()"
+    logInfo "configure()"
+    if ("$refreshInterval" == "null" || "$minimumChangeWatts" == "null") {
+        logError "Some preferences are null, please go through the configuration page first"
+        return
+    }
 
     updateDeviceInfo()
 
@@ -541,7 +563,7 @@ def configure() {
     reportGroup += ("$includeWattInReport" == "true" ? 4 : 0)
     reportGroup += ("$includeCurrentUsageInReport" == "true" ? 8 : 0)
 
-    log.trace "setting configuration refresh interval: " + new BigInteger("$refreshInterval")
+    logTrace "setting configuration refresh interval: " + new BigInteger("$refreshInterval")
 
     /***************************************************************
      Device specific configuration parameters
@@ -667,7 +689,7 @@ def poll() {
  *  Required for the "Refresh" capability
  */
 def refresh() {
-    logDebug "refresh()"
+    logInfo "refresh()"
     updateDeviceInfo()
 
     sendEvent(name: "power", value: "0", displayed: true, unit: "W")
@@ -736,19 +758,24 @@ def setColor(colormap) {
  *  installed - Called when the device handling is being installed
  */
 def installed() {
-    log.debug "installed() called"
+    logInfo "installed() called"
 
     if (state.deviceInfo == null) {
         state.deviceInfo = [:]
         state.deviceInfo['secureInclusion'] = false
     }
+
+    // Call a reset upon install to clear all values.
+    reset();
+
+    updateDeviceInfo();
 }
 
 /**
  *  updated - Called when the preferences of the device type are changed
  */
 def updated() {
-    logDebug "updated()"
+    logInfo "updated()"
 
     updateStatus()
     //updatePowerStatus(0)
@@ -761,7 +788,7 @@ def updated() {
  *  Defined by the custom command "reset"
  */
 def reset() {
-    logDebug "reset()"
+    logInfo "reset()"
     state.energyMeterRuntimeStart = now()
 
     delayBetween([
@@ -805,7 +832,7 @@ private updateStatus() {
 }
 
 private updateDeviceInfo() {
-    logTrace "updateDeviceInfo()"
+    logInfo "updateDeviceInfo()"
 	
     if (state.deviceInfo == null) {
         state.deviceInfo = [:]
@@ -848,6 +875,10 @@ private updateDeviceInfo() {
         newBuffer += "firmwareId: ${state.deviceInfo['firmwareId']} checksum: ${state.deviceInfo['checksum']}\n";
     }
 
+    if (newBuffer == null) {
+        newBuffer = buffer
+    }
+
     return sendEvent(name: "deviceInfo", value: "$newBuffer", displayed: false)
 }
 
@@ -882,6 +913,18 @@ private getBatteryRuntimeInHours() {
     mins = (secs / 60)
     hours = (mins / 60)
     return hours
+}
+
+void logInfo(str) {
+    log.info str
+}
+
+void logWarn(str) {
+    log.warn str
+}
+
+void logError(str) {
+    log.error str
 }
 
 void logDebug(str) {
