@@ -70,7 +70,7 @@ def clientVersion() {
 }
 
 metadata {
-    definition(name: "Aeon Labs Smart Switch 6", namespace: "jbisson", author: "Jonathan Bisson") {
+    definition(name: "Aeon Labs Smart Switch 6 Gen5", namespace: "jbisson", author: "Jonathan Bisson") {
         capability "Switch"
         capability "Polling"
         capability "Power Meter"
