@@ -11,7 +11,7 @@ Device handler used for the aeron smart switch gen5. Here's a list of features:
 - Report can either be configured to always be sent on a fixed time or when there is a delta difference in change %
 
 ## How to install
-Get the code here: https://github.com/jbisson/SmartThingsPublic/blob/master/devicetypes/jbisson/aeon-smartSwitch-6.src/aeon-smartSwitch-6-gen5.groovy 
+Get the code here: https://github.com/jbisson/SmartThingsPublic-/blob/master/devicetypes/jbisson/aeon-labs-smart-switch-6-gen5.src/aeon-labs-smart-switch-6-gen5.groovy 
 
 Follow this for more information https://community.smartthings.com/t/faq-an-overview-of-using-custom-code-in-smartthings/16772
 
@@ -19,7 +19,7 @@ Follow this for more information https://community.smartthings.com/t/faq-an-over
 https://community.smartthings.com/t/aeon-smart-energy-switch-6-gen5/62937
 
 ## Developer manufacturer documentation
-https://github.com/jbisson/SmartThingsPublic/blob/master/devicetypes/jbisson/aeon-smartSwitch-6.src/Aeon%20Labs%20Smart%20Switch%206%20gen5.pdf
+https://github.com/jbisson/SmartThingsPublic/blob/master/devicetypes/jbisson/aeon-labs-smart-switch-6-gen5.src/Aeon%20Labs%20Smart%20Switch%206%20gen5.pdf
 
 ---
 
