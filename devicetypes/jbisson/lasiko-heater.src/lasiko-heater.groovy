@@ -40,6 +40,7 @@ metadata {
         command "huboff"
         command "alloff"
         command "refresh"
+		command "flipLogicalState"
 	}
 
 	// simulator metadata
@@ -57,6 +58,9 @@ metadata {
 			state "off", label: 'Activity Off', action: "switch.on", icon: "st.harmony.harmony-hub-icon", backgroundColor: "#ffffff", nextState: "on"
 			state "on", label: 'Activity On', action: "switch.off", icon: "st.harmony.harmony-hub-icon", backgroundColor: "#79b821", nextState: "off"
 		}
+		standardTile("flipLogicalState", "device.switch", inactiveLabel: false, decoration: "flat") {
+			state "default", label:'flipLogical', action:"flipLogicalState"
+		}
 		standardTile("refresh", "device.switch", inactiveLabel: false, decoration: "flat") {
 			state "default", label:'', action:"refresh.refresh", icon:"st.secondary.refresh"
 		}
@@ -70,7 +74,7 @@ metadata {
 			state "default", label:'All Actions', action:"alloff", icon:"st.secondary.off"
 		}
 		main "realState"
-		details(["realState", "button", "refresh", "forceoff", "huboff", "alloff"])
+		details(["realState", "button", "flipLogicalState", "refresh", "forceoff", "huboff", "alloff"])
 	}
 }
 
@@ -110,6 +114,17 @@ def realOff() {
     }
 }
 
+def flipLogicalState() {
+	if (device.currentValue("level") == 1) {
+		log.trace 'flipping logical state to off'
+
+		sendEvent(name: "level", value: "0")
+
+	} else {
+		log.trace 'flipping logical state to on'
+		sendEvent(name: "level", value: "1")
+	}
+}
 def flipState() {
     if (device.currentValue("switch") == "on") {
     	log.trace 'activity is on' 

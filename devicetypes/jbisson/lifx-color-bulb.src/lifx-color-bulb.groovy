@@ -19,7 +19,7 @@
 }
 
 metadata {
-	definition (name: "LIFX Color Bulb (jbisson)", namespace: "jbisson", author: "LIFX modified by jbisson") {
+	definition (name: "Lifx Color Bulb", namespace: "jbisson", author: "LIFX modified by jbisson") {
 		capability "Actuator"
 		capability "Color Control"
 		capability "Color Temperature"

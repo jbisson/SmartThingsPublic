@@ -12,6 +12,7 @@
  *  the last time you did a reset. You can clear this counter by hitting the reset icon.
  *  This will take into account the variable aspect of your energy consumption.
  * 
+ *  works with: DSB06xxx-ZWUS/DSC24-ZWAU/DSC24-ZWEU
  *
  *  Revision History
  *  ==============================================
@@ -49,7 +50,7 @@
 }
 
 metadata {
-	definition (name: "Aeon Labs Smart Energy Switch DSB06xxx-ZWUS/DSC24-ZWAU/DSC24-ZWEU", namespace: "jbisson", author: "Jonathan Bisson") {
+	definition (name: "Aeon Labs Smart Switch dsc06106", namespace: "jbisson", author: "Jonathan Bisson") {
 		capability "Switch"
 		capability "Polling"
 		capability "Power Meter"
