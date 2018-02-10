@@ -22,6 +22,7 @@
  *
  *  Revision History
  *  ==============================================
+ *  2018-02-10 Version 5.2.1  Small Crash protection fix (reported by: dkorunic)
  *  2017-09-04 Version 5.2.0  Removed defaultValues on preference screen as a work-around for a platform bug, crash protection fixes
  *  2017-09-02 Version 5.1.6  More display clean-up and fixed reversed ranges on min watts/percent change in report prefs (Nezmo)
  *  2017-08-15 Version 5.1.5  Cleaned-up display for iOS and other display issues (Nezmo)
@@ -66,7 +67,7 @@
  */
 
 def clientVersion() {
-    return "5.2.0"
+    return "5.2.1"
 }
 
 metadata {
@@ -611,7 +612,7 @@ def configure() {
             formatCommand(zwave.configurationV1.configurationSet(parameterNumber: 0x50, size: 1, scaledConfigurationValue: 0)),    //Enable to send notifications to associated devices when load changes (0=nothing, 1=hail CC, 2=basic CC report)
             formatCommand(zwave.configurationV1.configurationSet(parameterNumber: 0x5A, size: 1, scaledConfigurationValue: ("$onlySendReportIfValueChange" == "true" ? 1 : 0))),    //Enables parameter 0x5B and 0x5C (0=disabled, 1=enabled)
             formatCommand(zwave.configurationV1.configurationSet(parameterNumber: 0x5B, size: 2, scaledConfigurationValue: new BigInteger("$minimumChangeWatts"))),    //Minimum change in wattage for a REPORT to be sent (Valid values 0 - 60000)
-            formatCommand(zwave.configurationV1.configurationSet(parameterNumber: 0x5C, size: 1, scaledConfigurationValue: "$minimumChangePercent")),    //Minimum change in percentage for a REPORT to be sent (Valid values 0 - 100)
+            formatCommand(zwave.configurationV1.configurationSet(parameterNumber: 0x5C, size: 1, scaledConfigurationValue: new BigInteger("$minimumChangePercent"))),    //Minimum change in percentage for a REPORT to be sent (Valid values 0 - 100)
 
             formatCommand(zwave.configurationV1.configurationSet(parameterNumber: 0x65, size: 4, scaledConfigurationValue: reportGroup)),    //Which reports need to send in Report group 1
             formatCommand(zwave.configurationV1.configurationSet(parameterNumber: 0x66, size: 4, scaledConfigurationValue: 0)),    //Which reports need to send in Report group 2
