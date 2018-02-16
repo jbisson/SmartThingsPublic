@@ -16,6 +16,7 @@
  *
  *  Revision History
  *  ==============================================
+ *  2018-02-15 Version 5.1.2  Typo fix (reported by: Ron_Darling)
  *  2018-02-10 Version 5.1.1  Small Crash protection fix (reported by: dkorunic)
  *  2017-02-08 Version 5.1.0  Added energy meter cost per hours/week/month/year feature, fixed display issues
  *  2016-11-13 Version 4.0.5  Added force refresh report notification update preference
@@ -47,7 +48,7 @@
  */
  
  def clientVersion() {
-    return "5.1.1"
+    return "5.1.2"
 }
 
 metadata {
@@ -482,7 +483,7 @@ def configure() {
         zwave.configurationV1.configurationSet(parameterNumber: 0x50, size: 1, scaledConfigurationValue: 0).format(),	//Enable to send notifications to associated devices when load changes (0=nothing, 1=hail CC, 2=basic CC report)
         zwave.configurationV1.configurationSet(parameterNumber: 0x5A, size: 1, scaledConfigurationValue: ("$onlySendReportIfValueChange" == "true" ? 1 : 0)).format(),	//Enables parameter 0x5B and 0x5C (0=disabled, 1=enabled)
         zwave.configurationV1.configurationSet(parameterNumber: 0x5B, size: 2, scaledConfigurationValue: new BigInteger("$minimumChangeWatts")).format(),	//Minimum change in wattage for a REPORT to be sent (Valid values 0 - 60000)
-        zwave.configurationV1.configurationSet(parameterNumber: 0x5C, size: 1, scaledConfigurationValue: new BigInteger("$minimumChangePercent)").format(),	//Minimum change in percentage for a REPORT to be sent (Valid values 0 - 100)
+        zwave.configurationV1.configurationSet(parameterNumber: 0x5C, size: 1, scaledConfigurationValue: new BigInteger("$minimumChangePercent")).format(),	//Minimum change in percentage for a REPORT to be sent (Valid values 0 - 100)
         
         zwave.configurationV1.configurationSet(parameterNumber: 0x65, size: 4, scaledConfigurationValue: reportGroup).format(),	//Which reports need to send in Report group 1
         zwave.configurationV1.configurationSet(parameterNumber: 0x66, size: 4, scaledConfigurationValue: 0).format(),	//Which reports need to send in Report group 2
