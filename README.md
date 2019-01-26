@@ -15,10 +15,12 @@ development by making a donation via PayPal.*
 
 ### Smart Apps
 
+* [__eGauge Energy Meter (Connect)__](eGaugeEnergyMeter.md) - eGauge Energy Meter (Connect)
 * [__Expose REST API__](ExposeRestApi.md) - Expose REST API App allows you to trigger events to a button as well as the ability to send notification directly from a REST API.
 
 ### Device Handlers
 
+* [__eGauge Energy Meter Register__](eGaugeEnergyMeter.md) - eGauge Energy Meter Register
 * [__Flic Button__](FlicButton.md) - Fluc Button device handler.
 * [__Aeon Smart Switch 6 (gen5)__](AeonSmartSwitch6gen5.md) - Aeon Smart Switch 6 (gen6) device handler.
 * [__Aeon Smart Switch DSC06106__](AeonSmartSwitchDsc06106.md) - Aeon Smart Switch DSC06106 device handler.
