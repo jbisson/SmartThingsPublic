@@ -7,6 +7,12 @@
  *
  *  Provide full energy power consumption statistics for eGauge devices. 
  *  This device handler require you to install the eGauge-energy-meter-connect smartApp. 
+ *
+ * Note that you'll see two type of energy cost cell: "Actual" and "PJ". Actual means the energy has already been consumed where as the "PJ" refer to the 
+ * "Projection" at that current energy rate that we are estimate. 
+ * For example, if you are pulling 1000 watts of energy at any given time, we will project a cost estimate in a per hour, per week, per month, per year.
+ * 
+ *  
  * 
  * Limitations:
  * 1) Power & Apparent Power register type are currently supported. Adding more register type would be easy, just ask if you have a real use case for it.
@@ -79,7 +85,7 @@ metadata {
             state "default", label: 'PJ Per\nYear\n$${currentValue}'
         }
 
-        valueTile("lastHourEnergyValue", "device.energie", width: 2, height: 1, decoration: "flat") {
+        valueTile("lastHourEnergyValue", "device.energy", width: 2, height: 1, decoration: "flat") {
             state "default", label: 'Last hour\n${currentValue}'
         }
 
