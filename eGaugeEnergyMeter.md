@@ -1,12 +1,10 @@
 ## eGauge Energy Meter
 
-Device handler used for the Aeon Smart Switch Dsc06106. Here's a list of features:
+eGauge Energy Meter. Here's a list of features:
 
-- On/off switch mode
-- Energy cost (current and cumulative) based on how much you pay in your country/state/province
-- Report frequency configuration (how often does the different values get updated)
-- Disable switch configuration so it always stay on/off, if needed
-- Report can either be configured to always be sent on a fixed time or when there is a delta difference in change %
+- Power & Energy report for all your eGauge registers
+
+Visit https://www.egauge.net/ for more information about their devices lineup.
 
 ## How to install
 Install the eGauge Energy Meter (Connect) SmartApp: https://github.com/jbisson/SmartThingsPublic/blob/master/smartapps/jbisson/egauge-energy-meter-connect.src/egauge-energy-meter-connect.groovy
