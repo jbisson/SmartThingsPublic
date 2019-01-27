@@ -8,6 +8,7 @@ Visit https://www.egauge.net/ for more information about their devices lineup.
 
 ## How to install
 Install the eGauge Energy Meter (Connect) SmartApp: https://github.com/jbisson/SmartThingsPublic/blob/master/smartapps/jbisson/egauge-energy-meter-connect.src/egauge-energy-meter-connect.groovy
+
 Install the eGauge Energy Register device handler: https://github.com/jbisson/SmartThingsPublic/blob/master/devicetypes/jbisson/egauge-energy-meter-register.src/egauge-energy-meter-register.groovy
 
 Follow this for more information https://community.smartthings.com/t/faq-an-overview-of-using-custom-code-in-smartthings/16772
