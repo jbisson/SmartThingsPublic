@@ -16,10 +16,10 @@ Follow this for more information https://community.smartthings.com/t/faq-an-over
 https://community.smartthings.com/t/aeon-smart-energy-switch-6-gen5/62937
 
 ## Screenshots
-![eGauge energy meter connect 001](https://github.com/jbisson/SmartThingsPublic/blob/master/smartapps/jbisson/egauge-energy-meter-connect.src/device sceenshots/2019-01-26 energy-meter-connect-001.jpg)
-![eGauge energy meter connect 002](https://github.com/jbisson/SmartThingsPublic/blob/master/smartapps/jbisson/egauge-energy-meter-connect.src/device sceenshots/2019-01-26 energy-meter-connect-002.jpg)
-![eGauge energy meter connect 003](https://github.com/jbisson/SmartThingsPublic/blob/master/smartapps/jbisson/egauge-energy-meter-connect.src/device sceenshots/2019-01-26 energy-meter-connect-003.jpg)
-![eGauge energy meter register 001](https://github.com/jbisson/SmartThingsPublic/blob/master/devicetypes/jbisson/egauge-energy-meter-register.src/device screenshots/2019-01-26 energy-meter-register-001.jpg)
+![eGauge energy meter connect 001](https://github.com/jbisson/SmartThingsPublic-/blob/master/smartapps/jbisson/egauge-energy-meter-connect.src/device%20screenshots/2019-01-26%20energy-meter-connect-001.jpg)
+![eGauge energy meter connect 002](https://github.com/jbisson/SmartThingsPublic-/blob/master/smartapps/jbisson/egauge-energy-meter-connect.src/device%20screenshots/2019-01-26%20energy-meter-connect-002.jpg)
+![eGauge energy meter connect 003](https://github.com/jbisson/SmartThingsPublic-/blob/master/smartapps/jbisson/egauge-energy-meter-connect.src/device%20screenshots/2019-01-26%20energy-meter-connect-003.jpg)
+![eGauge energy meter register 001](https://github.com/jbisson/SmartThingsPublic-/blob/master/devicetypes/jbisson/egauge-energy-meter-register.src/device%20screenshots/2019-01-26%20energy-meter-register-001.jpg)
 
 ## Developer manufacturer documentation
 https://github.com/jbisson/SmartThingsPublic/blob/master/devicetypes/smartapps/egauge-energy-meter-connect.src/2017-05-03 egauge-xml-api v1.51.pdf
