@@ -23,7 +23,7 @@ https://community.smartthings.com/t/aeon-smart-energy-switch-6-gen5/62937
 ![eGauge energy meter register 001](https://github.com/jbisson/SmartThingsPublic-/blob/master/devicetypes/jbisson/egauge-energy-meter-register.src/device%20screenshots/2019-01-26%20energy-meter-register-001.jpg)
 
 ## Developer manufacturer documentation
-https://github.com/jbisson/SmartThingsPublic/blob/master/devicetypes/smartapps/egauge-energy-meter-connect.src/2017-05-03 egauge-xml-api v1.51.pdf
+https://github.com/jbisson/SmartThingsPublic-/blob/master/smartapps/jbisson/egauge-energy-meter-connect.src/2017-05-03%20egauge-xml-api%20v1.51.pdf
 
 ---
 
