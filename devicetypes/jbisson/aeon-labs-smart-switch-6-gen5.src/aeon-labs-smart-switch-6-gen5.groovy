@@ -2,7 +2,7 @@
  *
  *  Aeon Smart Energy Switch 6 (gen5)
  *
- *  Copyright 2017 jbisson
+ *  Copyright 2019 jbisson
  *  based on James P ('elasticdev'), Mr Lucky, lg kahn code.
  *
  *
@@ -22,6 +22,7 @@
  *
  *  Revision History
  *  ==============================================
+ *  2019-03-25 Version 5.3.0  Fixed watt display and other small display tweaks
  *  2018-02-10 Version 5.2.1  Small Crash protection fix (reported by: dkorunic)
  *  2017-09-04 Version 5.2.0  Removed defaultValues on preference screen as a work-around for a platform bug, crash protection fixes
  *  2017-09-02 Version 5.1.6  More display clean-up and fixed reversed ranges on min watts/percent change in report prefs (Nezmo)
@@ -67,7 +68,7 @@
  */
 
 def clientVersion() {
-    return "5.2.1"
+    return "5.3.0"
 }
 
 metadata {
@@ -119,11 +120,7 @@ metadata {
         }
 
         valueTile("power", "device.power", width: 2, height: 1, decoration: "flat") {
-            state "default", label: '${currentValue} W', backgroundColors:[
-                    [value: 0, color: "#44b621"],
-                    [value: 500, color: "#e86d13"],
-                    [value: 1000, color: "#d04e00"]
-            ]
+            state "default", label: '${currentValue} W'
         }
 
         valueTile("energy", "device.energy", width: 2, height: 1, decoration: "flat") {
@@ -134,12 +131,12 @@ metadata {
             state "default", label: '${currentValue} A'
         }
 
-        valueTile("voltage", "device.voltage", width: 2, height: 1, decoration: "flat") {
+        valueTile("voltage", "device.voltage", width: 4, height: 1, decoration: "flat") {
             state "default", label: '${currentValue} v'
         }
 
         valueTile("currentEnergyCostTxt", "currentEnergyCostTxt", width: 2, height: 1, decoration: "flat") {
-            state "default", label: 'Energy Cost\n(Current):'
+            state "default", label: 'Energy Cost (Current):'
         }
 
         valueTile("currentEnergyCostHour", "currentEnergyCostHour", width: 1, height: 1, decoration: "flat") {
@@ -159,7 +156,7 @@ metadata {
         }
 
         valueTile("cumulativeEnergyCostTxt", "cumulativeEnergyCostTxt", width: 2, height: 1, decoration: "flat") {
-            state "default", label: 'Energy Cost\n(Cumulative)\nSince ${currentValue}:'
+            state "default", label: 'Energy Cost (Cumulative)\nSince ${currentValue}:'
         }
 
         valueTile("cumulativeEnergyCostHour", "cumulativeEnergyCostHour", width: 1, height: 1, decoration: "flat") {
@@ -206,8 +203,8 @@ metadata {
             state "default", label: '${currentValue}', action: "getDeviceInfo"
         }
 
-        main(["mainPanel", "power", "energy", "voltage", "amperage"])
-        details(["mainPanel", "deviceMode", "power", "energy", "amperage", "voltage",
+        main(["mainPanel", "power", "voltage", "amperage"])
+        details(["mainPanel", "deviceMode", "power", "amperage", "voltage",
                  "currentEnergyCostTxt", "currentEnergyCostHour", "currentEnergyCostWeek", "currentEnergyCostMonth", "currentEnergyCostYear",
                  "cumulativeEnergyCostTxt", "cumulativeEnergyCostHour", "cumulativeEnergyCostWeek", "cumulativeEnergyCostMonth", "cumulativeEnergyCostYear",
                  "rgbSelector", "levelSliderControl", "levelSliderTxt", "configure", "refresh", "reset", "deviceInfo"])
@@ -390,10 +387,9 @@ def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
 
             BigDecimal costDecimal = ( costPerKwh as BigDecimal )
             def batteryRunTimeHours = getBatteryRuntimeInHours()
-            eventList.push(internalCreateEvent([name: "energy", value: cmd.scaledMeterValue, unit: "kWh"]));
-
-            eventList.push(internalCreateEvent([name: "cumulativeEnergyCostTxt", value: getBatteryRuntime()]));
-            eventList.push(internalCreateEvent([name: "cumulativeEnergyCostHour", value: String.format("%5.2f", cmd.scaledMeterValue / batteryRunTimeHours * costDecimal)]));
+            
+			eventList.push(internalCreateEvent([name: "cumulativeEnergyCostTxt", value: getBatteryRuntime() + "\n" + cmd.scaledMeterValue + " kWh"]));
+			eventList.push(internalCreateEvent([name: "cumulativeEnergyCostHour", value: String.format("%5.2f", cmd.scaledMeterValue / batteryRunTimeHours * costDecimal)]));
             eventList.push(internalCreateEvent([name: "cumulativeEnergyCostWeek", value: String.format("%5.2f", cmd.scaledMeterValue / batteryRunTimeHours * costDecimal * 24 * 7)]));
             eventList.push(internalCreateEvent([name: "cumulativeEnergyCostMonth", value: String.format("%5.2f", cmd.scaledMeterValue / batteryRunTimeHours * costDecimal * 24 * 30.42)]));
             eventList.push(internalCreateEvent([name: "cumulativeEnergyCostYear", value: String.format("%5.2f", cmd.scaledMeterValue / batteryRunTimeHours * costDecimal * 24 * 365)]));
