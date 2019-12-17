@@ -22,7 +22,7 @@
  *
  *  Revision History
  *  ==============================================
- *  2019-03-25 Version 5.3.1  Fixed IllegalArgumentException bug during setColor if coming from a webCore piston (reported by: MaxVonEvil)
+ *  2019-12-17 Version 5.3.1  Fixed IllegalArgumentException bug during setColor if coming from a webCore piston (reported by: MaxVonEvil)
  *  2019-03-25 Version 5.3.0  Fixed watt display and other small display tweaks
  *  2018-02-10 Version 5.2.1  Small Crash protection fix (reported by: dkorunic)
  *  2017-09-04 Version 5.2.0  Removed defaultValues on preference screen as a work-around for a platform bug, crash protection fixes
