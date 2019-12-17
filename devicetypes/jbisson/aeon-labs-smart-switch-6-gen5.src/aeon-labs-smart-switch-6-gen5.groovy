@@ -22,6 +22,7 @@
  *
  *  Revision History
  *  ==============================================
+ *  2019-03-25 Version 5.3.1  Fixed IllegalArgumentException bug during setColor if coming from a webCore piston (reported by: MaxVonEvil)
  *  2019-03-25 Version 5.3.0  Fixed watt display and other small display tweaks
  *  2018-02-10 Version 5.2.1  Small Crash protection fix (reported by: dkorunic)
  *  2017-09-04 Version 5.2.0  Removed defaultValues on preference screen as a work-around for a platform bug, crash protection fixes
@@ -68,7 +69,7 @@
  */
 
 def clientVersion() {
-    return "5.3.0"
+    return "5.3.1"
 }
 
 metadata {
@@ -741,9 +742,10 @@ def setColor(colormap) {
         sendEvent(name: "color", value: hexColor)
         formatCommand(zwave.configurationV1.configurationSet(parameterNumber: 0x53, size: 3, configurationValue: colorUtil.hexToRgb(hexColor)))
     } else {
-        logDebug " in setColor: hex =  ${colormap.hex}"
+        logDebug " in setColor: hex = ${colormap.hex}"
         sendEvent(name: "color", value: colormap.hex)
-        formatCommand(zwave.configurationV1.configurationSet(parameterNumber: 0x53, size: 3, configurationValue: [colormap.red, colormap.green, colormap.blue]))
+		def hexColorList = colorUtil.hexToRgb(colormap.hex)
+        formatCommand(zwave.configurationV1.configurationSet(parameterNumber: 0x53, size: 3, configurationValue: [hexColorList[0], hexColorList[1], hexColorList[2]]))
     }
 }
 
