@@ -22,6 +22,7 @@
  *
  *  Revision History
  *  ==============================================
+ *  2019-12-17 Version 5.3.2  Added Foxx Project (UK) device as part of the fingerprint
  *  2019-12-17 Version 5.3.1  Fixed IllegalArgumentException bug during setColor if coming from a webCore piston (reported by: MaxVonEvil)
  *  2019-03-25 Version 5.3.0  Fixed watt display and other small display tweaks
  *  2018-02-10 Version 5.2.1  Small Crash protection fix (reported by: dkorunic)
@@ -69,7 +70,7 @@
  */
 
 def clientVersion() {
-    return "5.3.1"
+    return "5.3.2"
 }
 
 metadata {
@@ -98,6 +99,7 @@ metadata {
 
         // Base on https://community.smartthings.com/t/new-z-wave-fingerprint-format/48204
         fingerprint mfr: "0086", prod: "0103", model: "0060" // Aeon brand
+		fingerprint mfr: "0086", prod: "0003", model: "004B" // Foxx Project (UK)
         fingerprint mfr: "0134", prod: "0259", model: "0096" // AT&T rebrand
         fingerprint type: "1001", cc: "5E,25,26,33,70,27,32,81,85,59,72,86,7A,73", ccOut: "5A,82"
     }
