@@ -7,6 +7,7 @@
  *
  *  Revision History
  *  ==============================================
+ *  2020-10-28 Version 1.2.0 Added event unit
  *  2017-02-09 Version 1.1.0 Added Device offline status
  *  2016-12-01 Version 1.0.1 Added rate (duration) support.
  *
@@ -15,11 +16,11 @@
  */
  
  def clientVersion() {
-    return "1.1.0"
+      return "1.2.0 [2020-10-28]"
 }
 
 metadata {
-	definition (name: "Lifx Color Bulb", namespace: "jbisson", author: "LIFX modified by jbisson") {
+	definition (name: "Lifx Color Bulb", namespace: "jbisson", author: "LIFX (modified by jbisson)") {
 		capability "Actuator"
 		capability "Color Control"
 		capability "Color Temperature"
@@ -88,7 +89,7 @@ def setHue(percentage) {
 	parent.logErrors(logObject: log) {
 		def resp = parent.apiPUT("/lights/${selector()}/state", [color: "hue:${percentage * 3.6}", power: "on"])
 		if (resp.status < 300) {
-			sendEvent(name: "hue", value: percentage)
+			sendEvent(name: "hue", value: percentage, unit: "%")
 			sendEvent(name: "switch", value: "on")
 		} else {
 			log.error("Bad setHue result: [${resp.status}] ${resp.data}")
@@ -102,7 +103,7 @@ def setSaturation(percentage) {
 	parent.logErrors(logObject: log) {
 		def resp = parent.apiPUT("/lights/${selector()}/state", [color: "saturation:${percentage / 100}", power: "on"])
 		if (resp.status < 300) {
-			sendEvent(name: "saturation", value: percentage)
+			sendEvent(name: "saturation", value: percentage, unit: "%")
 			sendEvent(name: "switch", value: "on")
 		} else {
 			log.error("Bad setSaturation result: [${resp.status}] ${resp.data}")
@@ -134,8 +135,9 @@ def setColor(Map color) {
 	parent.logErrors(logObject:log) {
 		def resp = parent.apiPUT("/lights/${selector()}/state", [color: attrs.join(" "), power: "on"])
 		if (resp.status < 300) {
-			if (color.hex)
-				sendEvent(name: "color", value: color.hex)
+			if (color.hex) {
+        sendEvent(name: "color", value: color.hex)
+      }				
 			sendEvent(name: "switch", value: "on")
 			events.each { sendEvent(it) }
 		} else {
@@ -156,8 +158,8 @@ def setLevel(percentage) {
 	parent.logErrors(logObject:log) {
 		def resp = parent.apiPUT("/lights/${selector()}/state", ["brightness": percentage / 100, "power": "on"])
 		if (resp.status < 300) {
-			sendEvent(name: "level", value: percentage)
-			sendEvent(name: "switch.setLevel", value: percentage)
+			sendEvent(name: "level", value: percentage, unit: "%")
+			sendEvent(name: "switch.setLevel", value: percentage, unit: "%")
 			sendEvent(name: "switch", value: "on")
 		} else {
 			log.error("Bad setLevel result: [${resp.status}] ${resp.data}")
@@ -179,8 +181,8 @@ def setLevel(percentage, rate) {
 		def resp = parent.apiPUT("/lights/${selector()}/state", ["brightness": percentage / 100, "duration": (rate / 1000), "power": "on"])
 		if (resp.status < 300) {
 			if (rate < 5000) {
-				sendEvent(name: "level", value: percentage)
-				sendEvent(name: "switch.setLevel", value: percentage)
+				sendEvent(name: "level", value: percentage, unit: "%")
+				sendEvent(name: "switch.setLevel", value: percentage, unit: "%")
 				sendEvent(name: "switch", value: "on")
 			} else {
 				def refreshSecs = ((rate/1000) + 1)
@@ -199,7 +201,7 @@ def setColorTemperature(kelvin) {
 	parent.logErrors() {
 		def resp = parent.apiPUT("/lights/${selector()}/state", [color: "kelvin:${kelvin}", power: "on"])
 		if (resp.status < 300) {
-			sendEvent(name: "colorTemperature", value: kelvin)
+			sendEvent(name: "colorTemperature", value: kelvin, unit: "K")
 			sendEvent(name: "color", value: "#ffffff")
 			sendEvent(name: "saturation", value: 0)
 		} else {
@@ -248,13 +250,13 @@ def refresh() {
 	log.debug("Data: ${data}")
 
 	sendEvent(name: "label", value: data.label)
-	sendEvent(name: "level", value: Math.round((data.brightness ?: 1) * 100))
-	sendEvent(name: "switch.setLevel", value: Math.round((data.brightness ?: 1) * 100))
+	sendEvent(name: "level", value: Math.round((data.brightness ?: 1) * 100), unit: "%")
+	sendEvent(name: "switch.setLevel", value: Math.round((data.brightness ?: 1) * 100), unit: "%")
 	sendEvent(name: "switch", value: data.power)
 	sendEvent(name: "color", value: colorUtil.hslToHex((data.color.hue / 3.6) as int, (data.color.saturation * 100) as int))
-	sendEvent(name: "hue", value: data.color.hue / 3.6)
-	sendEvent(name: "saturation", value: data.color.saturation * 100)
-	sendEvent(name: "colorTemperature", value: data.color.kelvin)
+	sendEvent(name: "hue", value: data.color.hue / 3.6, unit: "%")
+	sendEvent(name: "saturation", value: data.color.saturation * 100, unit: "%")
+	sendEvent(name: "colorTemperature", value: data.color.kelvin, unit: "K")
 	sendEvent(name: "model", value: data.product.name)
 
 	if (data.connected) {

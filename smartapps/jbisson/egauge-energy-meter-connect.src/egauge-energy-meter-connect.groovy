@@ -33,6 +33,7 @@
  *
  *  Revision History
  *  ==============================================
+ *  2019-03-13 Version 1.0.01 Fixed a sync issue when deleting eGauge registers
  *  2019-01-26 Version 1.0.0  Initial version.
  *
  *
@@ -43,7 +44,7 @@
  */
  
 def version() {
-    return "1.0.0 [2019-01-26]"
+    return "1.0.1 [2019-03-13]"
 }
 
 definition(
@@ -429,7 +430,14 @@ def syncRegisters() {
 				it.deviceNetworkId == "eGauge.register.${selectedRegister.value}"
 		}
 		
-		registers["eGauge.register.${selectedRegister.value}"].alive = true
+		if (registers["eGauge.register.${selectedRegister.value}"]) {
+			registers["eGauge.register.${selectedRegister.value}"].alive = true
+		} else {
+			// Old data in the select register
+			registers["eGauge.register.${selectedRegister.value}"] = [:]
+			registers["eGauge.register.${selectedRegister.value}"].alive = false
+		}
+		
 				
 		if (!device) {			
 			logInfo "Creating eGauge register: ${selectedRegister.value} of type: ${state.registers["eGauge.register.${selectedRegister.value}"]}"
