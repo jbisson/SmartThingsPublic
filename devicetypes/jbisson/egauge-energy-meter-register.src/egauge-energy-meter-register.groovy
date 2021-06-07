@@ -26,6 +26,7 @@
  *
  *  Revision History
  *  ==============================================
+ *  2021-06-07 Version 1.1.1  Fixed power unit display issue 
  *  2020-10-28 Version 1.1.0  Added event unit
  *  2019-01-26 Version 1.0.0  Initial version.
  *
@@ -33,7 +34,7 @@
  */
 
 def clientVersion() {
-  return "1.1.0 [2020-10-28]"
+  return "1.1.1 [2021-06-07]"
 }
 
 metadata {
@@ -193,15 +194,15 @@ def installed() {
 }
 
 def updateCurrentPower(power) {
-  def powerAbs = (new BigDecimal(power) / 1000).abs()
+  def powerAbs = (new BigDecimal(power)).abs()
+  def kPowerAbs = (new BigDecimal(power) / 1000).abs()
   logInfo "updateCurrentPower() ${powerAbs} cost per kWh: ${parent.costPerKwh}"
   
   BigDecimal costDecimal = ( parent.costPerKwh as BigDecimal )
-  sendEvent(name: "currentEnergyCostHour", value: String.format("%5.2f", powerAbs * costDecimal))
-  sendEvent(name: "currentEnergyCostWeek", value: String.format("%5.2f", powerAbs * 24 * 7 * costDecimal))
-  sendEvent(name: "currentEnergyCostMonth", value: String.format("%5.2f", powerAbs * 24 * 30.42 * costDecimal))
-  sendEvent(name: "currentEnergyCostYear", value: String.format("%5.2f", powerAbs * 24 * 365 * costDecimal))
-  
+  sendEvent(name: "currentEnergyCostHour", value: String.format("%5.2f", kPowerAbs * costDecimal))
+  sendEvent(name: "currentEnergyCostWeek", value: String.format("%5.2f", kPowerAbs * 24 * 7 * costDecimal))
+  sendEvent(name: "currentEnergyCostMonth", value: String.format("%5.2f", kPowerAbs * 24 * 30.42 * costDecimal))
+  sendEvent(name: "currentEnergyCostYear", value: String.format("%5.2f", kPowerAbs * 24 * 365 * costDecimal))
   
   sendEvent(name: "power", value: "${powerAbs}", unit: "W", displayed: true)
 }
